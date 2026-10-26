@@ -274,7 +274,16 @@ for(const [id,[position,target]] of Object.entries(cameraViews)){
 }
 
 // Optional sound is activated ONLY by user gesture. Mobile browsers reject unsolicited audio.
-let officeSoundEnabled=false,officeAudio=null,phoneInterval=null,toastTimer=null;
+let officeSoundEnabled=false,officeAudio=null,phoneInterval=null,phoneSequenceIndex=0,toastTimer=null;
+const phoneGapsMs=[30000,120000,300000,600000]; // 30 s -> 2 min -> 5 min -> 10 min -> repetir
+function scheduleReceptionPhone(){
+ clearTimeout(phoneInterval);
+ if(!officeSoundEnabled)return;
+ const gap=phoneGapsMs[phoneSequenceIndex];phoneSequenceIndex=(phoneSequenceIndex+1)%phoneGapsMs.length;
+ phoneInterval=setTimeout(()=>{if(officeSoundEnabled)phoneRing();scheduleReceptionPhone()},gap);
+ $('soundToggle').title='Próxima chamada em '+(gap<60000?gap/1000+' segundos':gap/60000+' minutos');
+}
+
 function activateOfficeAudio(){
  const AudioCtx=window.AudioContext||window.webkitAudioContext;
  if(!AudioCtx)return false;
@@ -308,19 +317,24 @@ function phoneRing(){
 $('soundToggle').onclick=()=>{
  if(!officeSoundEnabled){
   if(!activateOfficeAudio()){$('soundToggle').textContent='Áudio indisponível';return;}
-  officeSoundEnabled=true;phoneInterval=setInterval(phoneRing,600000);
+  officeSoundEnabled=true;phoneSequenceIndex=0;scheduleReceptionPhone();
   $('soundToggle').textContent='🔊 Som ligado';$('soundToggle').setAttribute('aria-pressed','true');
  }else{
-  officeSoundEnabled=false;clearInterval(phoneInterval);phoneInterval=null;
+  officeSoundEnabled=false;clearTimeout(phoneInterval);phoneInterval=null;
   $('soundToggle').textContent='🔇 Ativar sons';$('soundToggle').setAttribute('aria-pressed','false');
  }
 };
 function celebrateWin(op){
- const now=clock.getElapsedTime();for(const p of team){
-  if(p.role==='desk'&&(p.index===names.indexOf(op.name)||Math.abs(p.index-names.indexOf(op.name))<=1))p.celebrateUntil=now+2.4;
+ const now=clock.getElapsedTime();
+ // Whole trading floor celebrates a WIN, not only the trader who operated.
+ for(const p of team){
+  if(p.role==='desk'&&!p.walking){
+   p.celebrateStart=now;
+   p.celebrateUntil=now+3.8;
+  }
  }
  const toast=$('winToast');toast.textContent='🎉 WIN DEMO · '+op.name+' · '+money(op.v);toast.classList.remove('active');void toast.offsetWidth;toast.classList.add('active');
- clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('active'),2600);
+ clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('active'),3200);
  const stage=canvas.parentElement,colors=['#43eaa7','#f4bb53','#ffffff','#61d7fa','#f891a1'];
  for(let k=0;k<38;k++){
   const bit=document.createElement('i');bit.className='confettiPiece';bit.style.left=(8+Math.random()*84)+'%';
@@ -473,12 +487,15 @@ function buildStaffAvatar(i){
  // Tiny custom tiger emblem sewn on the suit lapel.
  const patch=new THREE.Mesh(new THREE.PlaneGeometry(.15,.15),logoMaterial);
  patch.position.set(-.215,1.16,.245);upper.add(patch);
- const hands=[],cheerArms=new THREE.Group();upper.add(cheerArms);cheerArms.visible=false;
+ const hands=[],clapHands=[],cheerArms=new THREE.Group();upper.add(cheerArms);cheerArms.visible=false;
  for(const side of [-1,1]){
-  // WIN pose: both arms raised, separate from the desk typing and resting poses.
-  seg(cheerArms,side*.31,1.25,.05,side*.51,1.52,.12,.103,.082,suit);
-  seg(cheerArms,side*.51,1.52,.12,side*.47,1.83,.20,.078,.061,suit);
-  sph(cheerArms,side*.47,1.88,.21,.083,.08,.078,skin);
+  // Articulated WIN celebration: arms lift overhead and hands meet repeatedly for claps.
+  const clapJoint=new THREE.Group();clapJoint.position.set(side*.30,1.25,.065);cheerArms.add(clapJoint);
+  seg(clapJoint,0,0,0,side*.12,.31,.12,.105,.088,suit);
+  sph(clapJoint,side*.12,.31,.12,.086,.084,.081,suit);
+  seg(clapJoint,side*.12,.31,.12,-side*.12,.54,.22,.082,.066,suit);
+  sph(clapJoint,-side*.12,.57,.22,.09,.085,.075,skin);
+  clapHands.push({joint:clapJoint,side});
   // Resting pose for the sofa: hands down on the thighs, no keyboard motion.
   seg(sofaArms,side*.30,1.25,.035,side*.34,.98,.10,.104,.090,suit);
   seg(sofaArms,side*.34,.98,.10,side*.26,.73,.31,.084,.065,suit);
@@ -503,8 +520,12 @@ function buildStaffAvatar(i){
  // Supervisor carries a tablet.
  const tablet=new THREE.Group();standingArms.add(tablet);
  box(.29,.035,.20,mat('#172c3c'),.19,.83,.40,tablet);
- const screenTab=box(.245,.009,.16,mat('#50bfa0'),.19,.856,.40,tablet);
- const item={group:pivot,upper,sittingLegs,standingLegs,deskArms,sofaArms,standingArms,hands,strideLegs,cup,tablet,cheerArms,celebrateUntil:0,lossUntil:0,role:'',state:'WORKING',index:i,head:upper,route:[],walkSpeed:1.75,inspectAt:0,inspectIndex:i%6,walking:false};
+ const screenTab=box(.245,.009,.16,mat('#183e4c'),.19,.856,.40,tablet);
+ // Original Tiger logo in the supervisor's tablet, facing upward.
+ const tabletLogo=new THREE.Mesh(new THREE.PlaneGeometry(.175,.137),logoMaterial);
+ tabletLogo.rotation.x=-Math.PI/2;tabletLogo.position.set(.19,.865,.40);
+ tabletLogo.renderOrder=4;tablet.add(tabletLogo);
+ const item={group:pivot,upper,sittingLegs,standingLegs,deskArms,sofaArms,standingArms,hands,strideLegs,cup,tablet,cheerArms,clapHands,celebrateUntil:0,celebrateStart:0,lossUntil:0,role:'',state:'WORKING',index:i,head:upper,route:[],walkSpeed:1.75,inspectAt:0,inspectIndex:i%6,walking:false};
  pivot.traverse(obj=>{if(obj.isMesh){obj.userData.index=i;clickTargets.push(obj)}});
  scene.add(pivot);return item;
 }
@@ -663,16 +684,23 @@ function updateTeam(t){
  for(const p of team){
   const i=p.index;
   if(p.walking||p.route.length){walkStaff(p,dt,t);continue;}
-  p.upper.position.y=p.role==='desk'||p.role==='sofa'?0:.42;
-  p.upper.rotation.y=Math.sin(t*.6+i)*.018;
-  p.upper.rotation.z=0;
-  p.upper.rotation.x=0;
-  p.standingArms.rotation.x=0;
   const cheering=p.role==='desk'&&p.celebrateUntil>t;
+  const rise=cheering?Math.min(1,(t-p.celebrateStart)/.35):0;
+  p.upper.position.y=p.role==='sofa'?0:p.role==='desk'?Math.max(0,rise)*.42:.42;
+  p.sittingLegs.visible=p.role==='sofa'||(p.role==='desk'&&!cheering);
+  p.standingLegs.visible=p.role==='coffee'||p.role==='supervisor'||cheering;
+  p.group.position.y=p.role==='sofa'?.10:cheering?Math.abs(Math.sin(t*8+i))*.032:0;
+  p.upper.rotation.y=Math.sin(t*.6+i)*.018;
+  p.upper.rotation.z=0;p.upper.rotation.x=0;
+  p.standingArms.rotation.x=0;
   p.cheerArms.visible=cheering;
   if(p.role==='desk')p.deskArms.visible=!cheering;
-  if(cheering){p.cheerArms.rotation.z=Math.sin(t*12+i)*.11;p.upper.rotation.z=Math.sin(t*7+i)*.07;}
-  else if(p.role==='desk'&&p.lossUntil>t){p.upper.rotation.x=.12;}
+  if(cheering){
+   // Hands move to the center above the head and visibly touch ~3x/sec.
+   const clap=.16+.19*(.5+.5*Math.sin((t-p.celebrateStart)*16));
+   for(const c of p.clapHands)c.joint.rotation.z=c.side*clap;
+   p.upper.rotation.z=Math.sin(t*7+i)*.075;
+  }else if(p.role==='desk'&&p.lossUntil>t){p.upper.rotation.x=.12;}
   for(const leg of p.strideLegs)leg.rig.rotation.x=0;
   if(p.role==='desk'&&!cheering){
    for(const h of p.hands){h.group.position.y=1.115+Math.sin(t*11+i+h.side)*.019;h.group.rotation.x=Math.sin(t*12+i+h.side)*.07;}
