@@ -391,24 +391,77 @@ function showDetail(){
  $('detail').textContent='👤 '+names[selected]+' · Estratégia: '+strategies[selected]+' · '+state+' · Operações demonstrativas';
 }
 let total=0,wins=0,losses=0,balance=0,timer=null;const money=n=>n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+// This simulation does NOT make real orders, use actual quotes or access Bullex.
 function tick(){
- const i=Math.floor(Math.random()*people.length),win=Math.random()>.5;
- const asset=['EUR/USD','GBP/USD','USD/JPY','AUD/USD'][Math.floor(Math.random()*4)],v=win?8:-10;
+ const qualified=approvedStudies();
+ if(!qualified.length){
+  $('headline').textContent='🧠 Laboratório: nenhuma estratégia acima de 60% com 30+ testes sintéticos.';
+  refreshPipeline();return;
+ }
+ // Left lab provides the approved strategy; right room receives only approved signals.
+ const study=qualified[Math.floor(Math.random()*qualified.length)];
+ if(!(study.samples>=30&&studyRate(study)>60))return;
+ const asset=['EUR/USD','GBP/USD','USD/JPY','AUD/USD'][Math.floor(Math.random()*4)],
+ direction=Math.random()<.5?'call':'put',id=++nextSignalId;
+ const signal={id,asset,direction,strategy:study.name,studySamples:study.samples,winRate:studyRate(study),status:'AGUARDANDO',source:'ESTUDO SINTÉTICO',time:new Date().toLocaleTimeString('pt-BR'),epoch:flowEpoch};
+ signalQueue.unshift(signal);signalLog.unshift(signal);
+ signalQueue=signalQueue.slice(0,20);signalLog=signalLog.slice(0,100);
+ $('headline').textContent='🧠 '+study.name+' '+formatRate(study)+' → 📈 '+asset+' '+direction.toUpperCase()+' · sinal DEMO #'+id;
+ $('lastOperation').textContent='Sinal fictício #'+id+' transferido à Sala de Operações. Aguardando resultado DEMO.';
+ refreshPipeline();
+ const timerId=setTimeout(()=>{pendingSettlements.delete(timerId);settleDemoSignal(signal)},1700);
+ pendingSettlements.add(timerId);
+}
+function settleDemoSignal(signal){
+ if(signal.epoch!==flowEpoch||signal.status!=='AGUARDANDO')return;
+ // Synthetic win/loss outcomes are random; win rate is NOT a forecast.
+ const win=Math.random()>.5,v=win?8:-10,
+ operator=[3,4,5,9,10,11][Math.floor(Math.random()*6)];
+ signal.status=win?'WIN':'LOSS';signal.value=v;signal.operator=names[operator];
  total++;wins+=win?1:0;losses+=win?0:1;balance+=v;
- const op={id:total,name:names[i],asset,strategy:strategies[i],win,v,time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})};
- demoLedger.total=total;demoLedger.wins=wins;demoLedger.losses=losses;demoLedger.balance=balance;demoLedger.last=op;
- demoLedger.lastByTrader[i]=op;demoLedger.recent.unshift(op);demoLedger.recent.length=Math.min(25,demoLedger.recent.length);
- selected=i;
- $('total').textContent=total;$('wins').textContent=wins;$('losses').textContent=losses;$('balance').textContent=money(balance);$('winRate').textContent=(total?100*wins/total:0).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';
- $('headline').textContent=names[i]+' · '+asset+' · '+strategies[i]+' · '+(win?'WIN DEMO ✅':'LOSS DEMO ❌');
- $('lastOperation').textContent='Última operação demonstrativa #'+op.id+' · '+op.time+' · '+op.name+' · '+op.asset+' · '+(win?'WIN':'LOSS')+' · '+money(v)+' · Saldo acumulado: '+money(balance);
- const tr=document.createElement('tr');tr.innerHTML='<td>'+op.name+'</td><td>'+asset+'</td><td>'+op.strategy+'</td><td class="'+(win?'win':'loss')+'">'+(win?'WIN DEMO':'LOSS DEMO')+'</td><td>'+money(v)+'</td>';
+ // Re-evaluate lab score after each completed DEMO operation; no real market claim.
+ const study=studyForName(signal.strategy);
+ if(study){study.samples++;if(win)study.wins++;}
+ const op={id:signal.id,name:names[operator],asset:signal.asset,strategy:signal.strategy,direction:signal.direction,win,v,time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'}),source:'SIMULADA'};
+ Object.assign(demoLedger,{total,wins,losses,balance,last:op});
+ demoLedger.lastByTrader[operator]=op;demoLedger.recent.unshift(op);
+ demoLedger.recent.length=Math.min(25,demoLedger.recent.length);
+ selected=operator;
+ $('total').textContent=total;$('wins').textContent=wins;$('losses').textContent=losses;
+ $('balance').textContent=money(balance);$('winRate').textContent=(total?100*wins/total:0).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';
+ $('headline').textContent='📈 DEMO #'+signal.id+' · '+names[operator]+' · '+signal.strategy+' · '+(win?'WIN ✅':'LOSS ❌');
+ $('lastOperation').textContent='Operação SIMULADA #'+signal.id+' · '+op.time+' · '+op.name+' · '+op.asset+' · '+signal.direction.toUpperCase()+' · '+(win?'WIN':'LOSS')+' · '+money(v);
+ const tr=document.createElement('tr');tr.innerHTML='<td>'+op.name+'</td><td>'+op.asset+'</td><td>'+op.strategy+'</td><td class="'+(win?'win':'loss')+'">'+(win?'WIN DEMO':'LOSS DEMO')+'</td><td>'+money(v)+'</td>';
  $('history').prepend(tr);if($('history').children.length>100)$('history').lastElementChild.remove();
  charts.filter(c=>c.big).forEach(drawBigChart);updateCharts();
- people[i].phase+=3;people[i].celebrate=clock.getElapsedTime()+2.5;people[i].win=win;
- signals[i].material.color.set(win?0xffffff:0xff5b75);if(win)celebrateWin(op);else if(team[i])team[i].lossUntil=clock.getElapsedTime()+1.6;showDetail();refreshInspector();saveDemoHistory();
+ people[operator].phase+=3;people[operator].celebrate=clock.getElapsedTime()+2.5;people[operator].win=win;
+ signals[operator].material.color.set(win?0xffffff:0xff5b75);
+ if(win)celebrateWin(op);else if(team[operator])team[operator].lossUntil=clock.getElapsedTime()+1.6;
+ showDetail();refreshPipeline();saveDemoHistory();
 }
-$('start').onclick=()=>{if(timer===null)timer=setInterval(tick,4000)};$('pause').onclick=()=>{clearInterval(timer);timer=null};$('reset').onclick=()=>{$('pause').click();total=wins=losses=balance=0;$('total').textContent=$('wins').textContent=$('losses').textContent='0';$('balance').textContent=money(0);$('winRate').textContent='0,0%';$('headline').textContent='Equipe analisando o mercado fictício…';$('history').innerHTML='';Object.assign(demoLedger,{total:0,wins:0,losses:0,balance:0,last:null,recent:[],lastByTrader:Array(12).fill(null)});$('lastOperation').textContent='Simulação zerada. Inicie a demo para registrar novas operações.';charts.filter(c=>c.big).forEach(drawBigChart);updateCharts();refreshInspector();$('winToast').classList.remove('active');try{localStorage.removeItem('xtremeTigerOfficeDemo1')}catch(e){} };$('brokerInfo').onclick=()=>{const el=$('brokerDetails');el.hidden=!el.hidden;$('brokerInfo').setAttribute('aria-expanded',String(!el.hidden));};
+$('start').onclick=()=>{
+ if(timer!==null)return;
+ tick();timer=setInterval(tick,4500);
+ $('start').textContent='▶ Fluxo DEMO ativo';
+};
+$('pause').onclick=()=>{clearInterval(timer);timer=null;$('start').textContent='▶ Continuar fluxo DEMO';};
+$('reset').onclick=()=>{
+ $('pause').click();flowEpoch++;
+ for(const id of pendingSettlements)clearTimeout(id);
+ pendingSettlements.clear();signalQueue=[];signalLog=[];labStudies=makeStudy();nextSignalId=0;
+ total=wins=losses=balance=0;
+ $('total').textContent=$('wins').textContent=$('losses').textContent='0';
+ $('balance').textContent=money(0);$('winRate').textContent='0,0%';
+ $('headline').textContent='🧠 Sala de Estratégias pronta · 📈 Sala de Operações em espera';
+ $('history').replaceChildren();
+ Object.assign(demoLedger,{total:0,wins:0,losses:0,balance:0,last:null,recent:[],lastByTrader:Array(12).fill(null)});
+ $('lastOperation').textContent='Simulação zerada. As operações são fictícias e a Bullex não está conectada.';
+ charts.filter(c=>c.big).forEach(drawBigChart);updateCharts();refreshPipeline();
+ $('winToast').classList.remove('active');
+ try{localStorage.removeItem('xtremeTigerOfficeDemo1')}catch(e){}
+ $('start').textContent='▶ Iniciar fluxo DEMO';
+};
+$('brokerInfo').onclick=()=>{const el=$('brokerDetails');el.hidden=!el.hidden;$('brokerInfo').setAttribute('aria-expanded',String(!el.hidden));};
 const cameraViews={
  camera:[[0,12.6,22],[0,1.1,1.4]],
  camLeft:[[-7.6,5.8,8.8],[-4.8,1.4,-1.0]],
@@ -500,14 +553,23 @@ function celebrateWin(op){
 }
 const demoStorageKey='xtremeTigerOfficeDemo1';
 function saveDemoHistory(){
- try{localStorage.setItem(demoStorageKey,JSON.stringify({version:1,total,wins,losses,balance,recent:demoLedger.recent}))}catch(e){console.warn('Histórico demo não pôde ser salvo',e)}
+ try{localStorage.setItem(demoStorageKey,JSON.stringify({version:2,total,wins,losses,balance,recent:demoLedger.recent,labStudies:labStudies.map(x=>({wins:x.wins,samples:x.samples})),signalLog:signalLog.slice(0,50),nextSignalId}))}catch(e){console.warn('Histórico demo não pôde ser salvo',e)}
 }
 function restoreDemoHistory(){
  try{
   const data=JSON.parse(localStorage.getItem(demoStorageKey)||'null');
-  if(!data||data.version!==1||!Array.isArray(data.recent)||!Number.isInteger(data.total)||data.total<0||data.total>1000000)return;
+  if(!data||(data.version!==1&&data.version!==2)||!Array.isArray(data.recent)||!Number.isInteger(data.total)||data.total<0||data.total>1000000)return;
   if(!Number.isInteger(data.wins)||!Number.isInteger(data.losses)||data.wins+data.losses!==data.total||!Number.isFinite(data.balance))return;
   total=data.total;wins=data.wins;losses=data.losses;balance=data.balance;
+  if(data.version===2){
+   if(Array.isArray(data.labStudies)&&data.labStudies.length===strategies.length){
+    labStudies.forEach((st,i)=>{const x=data.labStudies[i];if(x&&Number.isInteger(x.samples)&&x.samples>=30&&x.samples<200000&&Number.isInteger(x.wins)&&x.wins>=0&&x.wins<=x.samples){st.samples=x.samples;st.wins=x.wins;}});
+   }
+   if(Array.isArray(data.signalLog)){
+    signalLog=data.signalLog.filter(x=>x&&Number.isInteger(x.id)&&x.id>0&&['EUR/USD','GBP/USD','USD/JPY','AUD/USD'].includes(x.asset)&&['call','put'].includes(x.direction)&&strategies.includes(x.strategy)&&['WIN','LOSS'].includes(x.status)).slice(0,50);
+    nextSignalId=Math.max(0,...signalLog.map(x=>x.id));
+   }
+  }
   const safeTrades=data.recent.slice(0,25).filter(op=>op&&names.includes(op.name)&&strategies.includes(op.strategy)&&['EUR/USD','GBP/USD','USD/JPY','AUD/USD'].includes(op.asset)&&typeof op.win==='boolean'&&Number.isFinite(op.v)&&Math.abs(op.v)<1000000);
   Object.assign(demoLedger,{total,wins,losses,balance,recent:safeTrades,last:safeTrades[0]||null,lastByTrader:Array(12).fill(null)});
   for(const op of demoLedger.recent){
@@ -529,6 +591,7 @@ function restoreDemoHistory(){
  }catch(e){console.warn('Histórico demo não pôde ser recuperado',e)}
 }
 restoreDemoHistory();
+refreshPipeline();
 const isMobile=matchMedia('(max-width: 750px)').matches;
 const qualityModes=['Auto','Econômica','Alta'];let qualityIndex=0,qualityFps=0;let fpsFrames=0,fpsLast=0;
 $('quality').onclick=()=>{
