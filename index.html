@@ -3,7 +3,7 @@
 <script type="importmap">{"imports":{"three":"https://esm.sh/three@0.170.0","three/addons/":"https://esm.sh/three@0.170.0/examples/jsm/"}}</script></head>
 <body><header><h1>🐯 XTREME TIGER <small>· Trader Office 3D</small></h1><b class="win">● DEMONSTRAÇÃO</b></header><main>
 <div class="controls"><button id="start" class="primary">▶ Iniciar fluxo DEMO</button><button id="pause">⏸ Pausar</button><button id="reset">↺ Zerar</button><button id="camera">🎥 Vista geral</button><details class="cameraTools"><summary>🎥 Mais câmeras e desempenho</summary><div class="controls"><button id="camLeft">🏢 Sala esquerda</button><button id="camRight">📈 Sala direita</button><button id="camHall">🚶 Corredor</button><button id="camLounge">☕ Recepção</button><button id="quality">⚙️ Qualidade: Auto</button></div></details><button id="soundToggle" aria-pressed="false">🔇 Ativar sons</button><button id="phoneTest" title="Ouvir agora o telefone da recepção">☎️ Testar telefone</button><button id="avatarTest" class="primary">↩ Ver equipe original</button><small id="avatarStatus" aria-live="polite">🐯 Equipe Tiger · 6 homens e 6 mulheres · rodízio automático</small><small>Arraste para girar · toque numa TV/monitor para ampliar · no foco, arraste para centralizar</small></div>
-<div class="stage"><canvas id="scene"></canvas><div id="fallback">Não foi possível carregar o motor 3D. Verifique a conexão com a internet.</div><div class="board"><strong>🐯 XTREME TIGER · LOUSA DIGITAL</strong><span id="headline">Equipe analisando o mercado fictício…</span></div><div class="info">🏙️ 2 salas de luxo · Toque numa tela para visualizar</div><div id="inspector" class="screenInspector" role="region" aria-label="Resultados na tela"><div class="inspectorHeader"><h3 id="screenTitle">📊 Tela</h3><div class="inspectorHeadButtons"><button id="focusReset">🎯</button><button id="closeInspector" aria-label="Fechar inspeção">✕</button></div></div><small id="screenSource">SIMULAÇÃO · Sem corretora</small><div class="summary" id="screenSummary"></div><strong>Últimas operações nesta tela</strong><div id="screenOps"></div><small>Arraste sobre o cenário para deslocar o foco. Pinça para zoom. Volte ao escritório para girar 360°.</small></div><div id="winToast" class="winToast" aria-live="polite"></div></div>
+<div class="stage"><canvas id="scene"></canvas><div id="fallback">Não foi possível carregar o motor 3D. Verifique a conexão com a internet.</div><div class="board"><strong>🐯 XTREME TIGER · LOUSA DIGITAL</strong><span id="headline">Equipe analisando o mercado fictício…</span></div><div class="info">🏙️ 2 salas de luxo · Toque numa tela para visualizar</div><div id="inspector" class="screenInspector" role="region" aria-label="Resultados na tela"><div class="inspectorHeader"><h3 id="screenTitle">📊 Tela</h3><div class="inspectorHeadButtons"><button id="focusReset">🎯</button><button id="closeInspector" aria-label="Fechar inspeção">✕</button></div></div><small id="screenSource">SIMULAÇÃO · Sem corretora</small><div class="summary" id="screenSummary"></div><strong id="inspectorListTitle">Últimas operações nesta tela</strong><div id="screenOps"></div><small>Arraste sobre o cenário para deslocar o foco. Pinça para zoom. Volte ao escritório para girar 360°.</small></div><div id="winToast" class="winToast" aria-live="polite"></div></div>
 <div class="statusNote"><strong>🔌 Bullex: <span id="brokerState" class="loss">DESCONECTADA</span></strong> · Execução real desativada. <button id="brokerInfo" aria-expanded="false">Preparar conexão segura</button><div id="brokerDetails" hidden>O escritório é um site estático. Para acessar a conta Bullex precisaremos de um serviço de backend protegido, documentação autorizada de conexão, modo de conta DEMO verificado, autenticação e controles de risco. <strong>Não digite sua senha neste site nem a envie no chat.</strong> APIs de terceiros não oficiais ainda não estão integradas.</div></div>
 <div class="rooms">
 <section class="room" id="strategyRoom"><h3>🧠 Sala esquerda · Laboratório de Estratégias</h3><div class="roomdesc">Testes sintéticos de demonstração, não backtests reais. Aprovadas somente as estratégias com <strong>mais de 60%</strong> e pelo menos <strong>30 testes</strong>.</div><div class="roomStats"><span>Aprovadas: <b id="approvedCount">0</b></span><span>Em estudo: <b id="labCount">12</b></span></div><div id="labStrategies"></div></section>
@@ -84,7 +84,9 @@ if(i%3===1){const skirt=new THREE.Mesh(new THREE.CylinderGeometry(.29,.36,.3,10)
 // ID card
 box(.13,.19,.02,white,.19,1.08,.187,person);
 person.traverse(obj=>{if(obj.isMesh){obj.userData.index=i;clickTargets.push(obj)}});people.push({group:person,head,arms,legs,x,z,phase:i*.7,walk:false,celebrate:0,win:true,blink:i*.48,smile});});
-function updateCharts(){charts.forEach(ch=>{if(ch.big)return;let p=ch.prices;p.push(Math.max(15,Math.min(95,p[p.length-1]+(Math.random()-.5)*12)));p.shift();const c=ch.ctx;c.fillStyle='#081a27';c.fillRect(0,0,192,112);c.strokeStyle='#2b4654';for(let y=12;y<112;y+=22){c.beginPath();c.moveTo(0,y);c.lineTo(192,y);c.stroke()}for(let k=1;k<p.length;k++){const x=k*10,up=p[k]>=p[k-1],a=104-p[k],b=104-p[k-1];c.strokeStyle=up?'#42e3aa':'#f16d85';c.fillStyle=c.strokeStyle;c.beginPath();c.moveTo(x,Math.min(a,b)-5);c.lineTo(x,Math.max(a,b)+5);c.stroke();c.fillRect(x-3,Math.min(a,b),6,Math.max(2,Math.abs(a-b)))}c.fillStyle='#bfe3ec';c.font='10px monospace';c.fillText(['EUR/USD','GBP/USD','USD/JPY','AUD/USD'][ch.seed%4]+' · DEMO',5,10);const last=demoLedger.lastByTrader[ch.seed];if(last){c.fillStyle='#071b27';c.fillRect(0,89,192,23);c.fillStyle=last.win?'#56efb7':'#ff8797';c.font='bold 11px sans-serif';c.fillText((last.win?'WIN ':'LOSS ')+(last.v>=0?'+':'')+'R$ '+last.v.toFixed(2),5,104)}ch.tex.needsUpdate=true})}updateCharts();setInterval(()=>{if(!document.hidden)updateCharts()},2000);
+function updateCharts(){charts.forEach(ch=>{if(ch.big)return;let p=ch.prices;p.push(Math.max(15,Math.min(95,p[p.length-1]+(Math.random()-.5)*12)));p.shift();const c=ch.ctx;c.fillStyle='#081a27';c.fillRect(0,0,192,112);c.strokeStyle='#2b4654';for(let y=12;y<112;y+=22){c.beginPath();c.moveTo(0,y);c.lineTo(192,y);c.stroke()}for(let k=1;k<p.length;k++){const x=k*10,up=p[k]>=p[k-1],a=104-p[k],b=104-p[k-1];c.strokeStyle=up?'#42e3aa':'#f16d85';c.fillStyle=c.strokeStyle;c.beginPath();c.moveTo(x,Math.min(a,b)-5);c.lineTo(x,Math.max(a,b)+5);c.stroke();c.fillRect(x-3,Math.min(a,b),6,Math.max(2,Math.abs(a-b)))}c.fillStyle='#bfe3ec';c.font='10px monospace';const labMonitor=[0,1,2,6,7,8].includes(ch.seed),study=studyForName(strategies[ch.seed]);
+ c.fillText(labMonitor?'LAB '+(study?Math.round(studyRate(study))+'%':'—'):'OPS · DEMO',5,10);const last=demoLedger.lastByTrader[ch.seed];if(last&&!labMonitor){c.fillStyle='#071b27';c.fillRect(0,89,192,23);c.fillStyle=last.win?'#56efb7':'#ff8797';c.font='bold 11px sans-serif';c.fillText((last.win?'WIN ':'LOSS ')+(last.v>=0?'+':'')+'R$ '+last.v.toFixed(2),5,104)}
+ if(labMonitor&&study){c.fillStyle='#071b27';c.fillRect(0,89,192,23);c.fillStyle=studyRate(study)>60?'#56efb7':'#ff8797';c.font='bold 10px sans-serif';c.fillText(study.name+' · '+formatRate(study),5,104)}ch.tex.needsUpdate=true})}updateCharts();setInterval(()=>{if(!document.hidden)updateCharts()},2000);
 // Luxury high-rise suite: central corridor, distinct left/right offices and sunlit exterior windows.
 const glass=new THREE.MeshPhysicalMaterial({color:0xc8f3ff,transparent:true,opacity:.115,roughness:.13,metalness:0,depthWrite:false,side:THREE.DoubleSide}),trim=mat('#263d4b',.4);
 const brass=new THREE.MeshStandardMaterial({color:'#b89656',metalness:.82,roughness:.33}),
@@ -213,6 +215,7 @@ const labelRoom=(label,x)=>{
 // Removed hanging room signs that obstructed the corridor and screen views.
 
 function drawBigChart(c){
+  if(c.roomView){drawRoomTV(c);return;}
   const g=c.ctx,w=c.cv.width,h=c.cv.height,p=c.prices,top=65,bottom=h-119,left=48,right=w-74;
   g.fillStyle='#06141e';g.fillRect(0,0,w,h);g.lineWidth=1;g.strokeStyle='#1b3947';
   const lo=Math.min(...p)-6,hi=Math.max(...p)+6,y=v=>bottom-(v-lo)/(hi-lo)*(bottom-top);
@@ -234,17 +237,52 @@ function drawBigChart(c){
   else{g.fillStyle='#a6c5d1';g.font='17px sans-serif';g.fillText('Aguardando primeira operação demonstrativa...',left,h-12)}
   c.tex.needsUpdate=true
 }
+
+function drawRoomTV(c){
+ const g=c.ctx,w=c.cv.width,h=c.cv.height,lab=c.roomView==='lab';
+ g.fillStyle='#071c29';g.fillRect(0,0,w,h);
+ g.fillStyle=lab?'#f2c881':'#7bf0c4';g.font='bold 30px system-ui';
+ g.fillText(lab?'🧠 SALA DE ESTRATÉGIAS':'📈 SALA DE OPERAÇÕES',29,48);
+ g.font='18px system-ui';g.fillStyle='#accbd7';g.fillText('XTREME TIGER · AMBIENTE SIMULADO · BULLEX NÃO CONECTADA',29,79);
+ g.fillStyle='#173345';g.fillRect(18,93,w-36,50);
+ if(lab){
+  const ok=approvedStudies();
+  g.fillStyle='#ecf0ec';g.font='bold 24px system-ui';g.fillText('APROVADAS: '+ok.length+' / '+labStudies.length,29,127);
+  const order=[...labStudies].sort((a,b)=>studyRate(b)-studyRate(a));
+  order.slice(0,11).forEach((x,i)=>{
+   const y=167+i*22,pass=ok.includes(x);
+   g.fillStyle=i%2?'#0e2c3b':'#123041';g.fillRect(18,y-17,w-36,22);
+   g.fillStyle=pass?'#5ce9a6':'#a7b7c1';g.font='16px system-ui';
+   g.fillText((pass?'✓ ':'· ')+x.name,29,y);
+   g.fillStyle=pass?'#5ce9a6':'#eba1a2';g.textAlign='right';g.fillText(formatRate(x)+' · '+x.samples+' TESTES',w-28,y);g.textAlign='left';
+  });
+  g.fillStyle='#f2c881';g.font='bold 18px system-ui';g.fillText('FILTRO: MAIS DE 60% · MÍNIMO 30 · TESTES FICTÍCIOS',29,h-18);
+ }else{
+  g.fillStyle='#e9f6f0';g.font='bold 23px system-ui';g.fillText('SINAIS '+signalLog.length+' · WIN '+demoLedger.wins+' / LOSS '+demoLedger.losses,29,126);
+  g.fillStyle=demoLedger.balance>=0?'#75e5b2':'#ff8597';g.font='bold 20px system-ui';g.fillText('SALDO DEMO: R$ '+demoLedger.balance.toFixed(2),w-285,125);
+  for(let i=0;i<Math.min(8,signalLog.length);i++){
+   const x=signalLog[i],y=178+i*28;
+   g.fillStyle=i%2?'#0e2c3b':'#123041';g.fillRect(18,y-21,w-36,27);
+   g.font='17px system-ui';g.fillStyle='#e6f7f5';g.fillText('#'+x.id+' '+x.asset+' '+x.direction.toUpperCase()+' · '+x.strategy,29,y);
+   g.fillStyle=x.status==='WIN'?'#5cedb6':x.status==='LOSS'?'#ff929d':'#efd18b';
+   g.textAlign='right';g.fillText(x.status,w-29,y);g.textAlign='left';
+  }
+  g.fillStyle='#8adcc5';g.font='bold 18px system-ui';g.fillText('EXECUÇÃO LOCAL DEMO · NENHUMA ORDEM NA CORRETORA',29,h-20);
+ }
+ c.tex.needsUpdate=true;
+}
 function bigTV(pair,x,y,z,w,h,seed){
  const cv=document.createElement('canvas');cv.width=768;cv.height=432;
  const ctx=cv.getContext('2d'),tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;
- const ch={ctx,cv,tex,seed,big:true,pair,prices:Array.from({length:38},(_,i)=>76+Math.sin(i*.44+seed)*9+Math.sin(i*.16)*7+(i-18)*.23)};
+ const roomView=pair==='LABORATÓRIO'?'lab':pair==='OPERAÇÕES DEMO'?'operations':null;
+ const ch={ctx,cv,tex,seed,big:true,pair,roomView,prices:Array.from({length:38},(_,i)=>76+Math.sin(i*.44+seed)*9+Math.sin(i*.16)*7+(i-18)*.23)};
  charts.push(ch);drawBigChart(ch);box(w+.22,h+.2,.12,mat('#0b1a24'),x,y,z-.07);
  const surface=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide}));
- surface.position.set(x,y,z+.02);surface.userData.screen={kind:"tv",asset:pair};screenTargets.push(surface);scene.add(surface);return surface
+ surface.position.set(x,y,z+.02);surface.userData.screen=roomView?{kind:roomView}:{kind:"tv",asset:pair};screenTargets.push(surface);scene.add(surface);return surface
 }
 setInterval(()=>{if(document.hidden)return;charts.filter(c=>c.big).forEach(c=>{const p=c.prices;p.shift();p.push(Math.max(35,Math.min(120,p[p.length-1]+(Math.random()-.48)*8)));drawBigChart(c)})},2200);
 // TVs on back wall of each office, never on the central glass partition.
-bigTV('EUR/USD',-4,2.6,-5.72,3.2,1.9,6);bigTV('GBP/USD',4,2.6,-5.72,3.2,1.9,16);
+bigTV('LABORATÓRIO',-4,2.6,-5.72,3.2,1.9,6);bigTV('OPERAÇÕES DEMO',4,2.6,-5.72,3.2,1.9,16);
 // Separate waiting room beyond the office glass: carpet, sofa, coffee table and TV.
 const receptionGlass=new THREE.MeshPhysicalMaterial({color:'#b6e1ec',roughness:.07,transparent:true,opacity:.21,depthWrite:false,side:THREE.DoubleSide});
 // Reception glass has a real opening at z=7.75 for staff returning from the sofa.
@@ -312,16 +350,30 @@ $('closeInspector').onclick=releaseFocus;
 $('focusReset').onclick=()=>{if(focusTarget&&focusPosition){camera.position.copy(focusPosition);controls.target.copy(focusTarget);controls.update();}};
 function refreshInspector(){
  if(!activeScreen)return;
- const ss=activeScreen,desk=ss.kind==='desk',trader=desk?names[ss.index]:null;
- $('screenTitle').textContent=desk?'🖥️ '+trader+' · Monitor de operação':'📺 '+ss.asset+' · Painel geral';
- $('screenSource').textContent='DEMONSTRAÇÃO · Dados das operações simuladas, não de corretora';
- const entries=demoLedger.recent.filter(op=>desk?op.name===trader:op.asset===ss.asset);
- const count=entries.length,winCount=entries.filter(op=>op.win).length,amount=entries.reduce((acc,op)=>acc+op.v,0);
- const boxes=[['Operações (histórico recente)',count],['WIN / LOSS',winCount+' / '+(count-winCount)],['Saldo destes registros',money(amount)],['Saldo geral DEMO',money(demoLedger.balance)]];
- $('screenSummary').replaceChildren(...boxes.map(([label,value])=>{const x=document.createElement('span'),l=document.createElement('div'),v=document.createElement('b');l.textContent=label;v.textContent=value;x.append(l,v);return x}));
+ const ss=activeScreen,desk=ss.kind==='desk',isLab=ss.kind==='lab'||(desk&&[0,1,2,6,7,8].includes(ss.index));
+ const trader=desk?names[ss.index]:null;
+ $('screenTitle').textContent=isLab?'🧠 '+(desk?trader+' · Laboratório':'Laboratório de Estratégias'):'📈 '+(desk?trader+' · Operações':'Central de Operações');
+ $('screenSource').textContent='ESTUDO E OPERAÇÕES SINTÉTICOS · Nenhuma conexão com a Bullex';
+ const entries=isLab?(desk?labStudies.filter(x=>x.name===strategies[ss.index]):[...labStudies].sort((a,b)=>studyRate(b)-studyRate(a))):(desk?demoLedger.recent.filter(op=>op.name===trader):demoLedger.recent);
+ const summary=isLab?[
+  ['Estratégias aprovadas',approvedStudies().length],
+  ['Limite de aprovação','>60% · 30 testes'],
+  ['Origem dos testes','FICTÍCIA'],
+  ['Conexão Bullex','DESCONECTADA']
+ ]:[
+  ['Operações demo',demoLedger.total],['WIN / LOSS',demoLedger.wins+' / '+demoLedger.losses],
+  ['Saldo demo',money(demoLedger.balance)],['Sinais gerados',signalLog.length]
+ ];
+ $('screenSummary').replaceChildren(...summary.map(([label,value])=>{const x=document.createElement('span'),l=document.createElement('div'),v=document.createElement('b');l.textContent=label;v.textContent=value;x.append(l,v);return x}));
+ $('inspectorListTitle').textContent=isLab?'Estratégias analisadas':'Últimas operações executadas na demonstração';
  const host=$('screenOps');host.replaceChildren();
- if(!entries.length){const el=document.createElement('p');el.textContent='Nenhuma operação registrada para esta tela. Inicie a demo e aguarde os resultados.';host.append(el);}
- for(const op of entries.slice(0,8)){const el=document.createElement('div');el.className='miniOp';el.textContent=op.time+' · '+op.name+' · '+op.asset+' · '+(op.win?'✅ WIN':'❌ LOSS')+' · '+money(op.v)+' · '+op.strategy;host.append(el);}
+ if(!entries.length){const el=document.createElement('p');el.textContent='Sem registros até o momento.';host.append(el);}
+ for(const item of entries.slice(0,12)){
+  const el=document.createElement('div');el.className='miniOp';
+  el.textContent=isLab?item.name+' · '+formatRate(item)+' · '+item.samples+' TESTES SINTÉTICOS · '+(approvedStudies().includes(item)?'APROVADA':'EM ESTUDO'):
+  item.time+' · '+item.name+' · '+item.asset+' · '+(item.win?'✅ WIN':'❌ LOSS')+' · '+money(item.v)+' · '+item.strategy;
+  host.append(el);
+ }
 }
 canvas.addEventListener('pointerdown',e=>down=[e.clientX,e.clientY]);
 canvas.addEventListener('pointerup',e=>{
@@ -356,7 +408,8 @@ function tick(){
  people[i].phase+=3;people[i].celebrate=clock.getElapsedTime()+2.5;people[i].win=win;
  signals[i].material.color.set(win?0xffffff:0xff5b75);if(win)celebrateWin(op);else if(team[i])team[i].lossUntil=clock.getElapsedTime()+1.6;showDetail();refreshInspector();saveDemoHistory();
 }
-$('start').onclick=()=>{if(timer===null)timer=setInterval(tick,4000)};$('pause').onclick=()=>{clearInterval(timer);timer=null};$('reset').onclick=()=>{$('pause').click();total=wins=losses=balance=0;$('total').textContent=$('wins').textContent=$('losses').textContent='0';$('balance').textContent=money(0);$('winRate').textContent='0,0%';$('headline').textContent='Equipe analisando o mercado fictício…';$('history').innerHTML='';Object.assign(demoLedger,{total:0,wins:0,losses:0,balance:0,last:null,recent:[],lastByTrader:Array(12).fill(null)});$('lastOperation').textContent='Simulação zerada. Inicie a demo para registrar novas operações.';charts.filter(c=>c.big).forEach(drawBigChart);updateCharts();refreshInspector();$('winToast').classList.remove('active');try{localStorage.removeItem('xtremeTigerOfficeDemo1')}catch(e){} };const cameraViews={
+$('start').onclick=()=>{if(timer===null)timer=setInterval(tick,4000)};$('pause').onclick=()=>{clearInterval(timer);timer=null};$('reset').onclick=()=>{$('pause').click();total=wins=losses=balance=0;$('total').textContent=$('wins').textContent=$('losses').textContent='0';$('balance').textContent=money(0);$('winRate').textContent='0,0%';$('headline').textContent='Equipe analisando o mercado fictício…';$('history').innerHTML='';Object.assign(demoLedger,{total:0,wins:0,losses:0,balance:0,last:null,recent:[],lastByTrader:Array(12).fill(null)});$('lastOperation').textContent='Simulação zerada. Inicie a demo para registrar novas operações.';charts.filter(c=>c.big).forEach(drawBigChart);updateCharts();refreshInspector();$('winToast').classList.remove('active');try{localStorage.removeItem('xtremeTigerOfficeDemo1')}catch(e){} };$('brokerInfo').onclick=()=>{const el=$('brokerDetails');el.hidden=!el.hidden;$('brokerInfo').setAttribute('aria-expanded',String(!el.hidden));};
+const cameraViews={
  camera:[[0,12.6,22],[0,1.1,1.4]],
  camLeft:[[-7.6,5.8,8.8],[-4.8,1.4,-1.0]],
  camRight:[[7.6,5.8,8.8],[4.8,1.4,-1.0]],
