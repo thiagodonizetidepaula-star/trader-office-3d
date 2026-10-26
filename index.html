@@ -216,9 +216,9 @@ function tick(){
  $('history').prepend(tr);if($('history').children.length>100)$('history').lastElementChild.remove();
  charts.filter(c=>c.big).forEach(drawBigChart);updateCharts();
  people[i].phase+=3;people[i].celebrate=clock.getElapsedTime()+2.5;people[i].win=win;
- signals[i].material.color.set(win?0xffffff:0xff5b75);showDetail();
+ signals[i].material.color.set(win?0xffffff:0xff5b75);showDetail();saveDemoHistory();
 }
-$('start').onclick=()=>{if(timer===null)timer=setInterval(tick,4000)};$('pause').onclick=()=>{clearInterval(timer);timer=null};$('reset').onclick=()=>{$('pause').click();total=wins=losses=balance=0;$('total').textContent=$('wins').textContent=$('losses').textContent='0';$('balance').textContent=money(0);$('winRate').textContent='0,0%';$('headline').textContent='Equipe analisando o mercado fictício…';$('history').innerHTML='';Object.assign(demoLedger,{total:0,wins:0,losses:0,balance:0,last:null,recent:[],lastByTrader:Array(12).fill(null)});$('lastOperation').textContent='Simulação zerada. Inicie a demo para registrar novas operações.';charts.filter(c=>c.big).forEach(drawBigChart);updateCharts()};const cameraViews={
+$('start').onclick=()=>{if(timer===null)timer=setInterval(tick,4000)};$('pause').onclick=()=>{clearInterval(timer);timer=null};$('reset').onclick=()=>{$('pause').click();total=wins=losses=balance=0;$('total').textContent=$('wins').textContent=$('losses').textContent='0';$('balance').textContent=money(0);$('winRate').textContent='0,0%';$('headline').textContent='Equipe analisando o mercado fictício…';$('history').innerHTML='';Object.assign(demoLedger,{total:0,wins:0,losses:0,balance:0,last:null,recent:[],lastByTrader:Array(12).fill(null)});$('lastOperation').textContent='Simulação zerada. Inicie a demo para registrar novas operações.';charts.filter(c=>c.big).forEach(drawBigChart);updateCharts();try{localStorage.removeItem('xtremeTigerOfficeDemo1')}catch(e){} };const cameraViews={
  camera:[[0,12.6,22],[0,1.1,1.4]],
  camLeft:[[-7.6,5.8,8.8],[-4.8,1.4,-1.0]],
  camRight:[[7.6,5.8,8.8],[4.8,1.4,-1.0]],
@@ -228,14 +228,45 @@ $('start').onclick=()=>{if(timer===null)timer=setInterval(tick,4000)};$('pause')
 for(const [id,[position,target]] of Object.entries(cameraViews)){
  $(id).onclick=()=>{camera.position.set(...position);controls.target.set(...target);controls.update()};
 }
+
+const demoStorageKey='xtremeTigerOfficeDemo1';
+function saveDemoHistory(){
+ try{localStorage.setItem(demoStorageKey,JSON.stringify({version:1,total,wins,losses,balance,recent:demoLedger.recent}))}catch(e){console.warn('Histórico demo não pôde ser salvo',e)}
+}
+function restoreDemoHistory(){
+ try{
+  const data=JSON.parse(localStorage.getItem(demoStorageKey)||'null');
+  if(!data||data.version!==1||!Array.isArray(data.recent)||!Number.isInteger(data.total)||data.total<0||data.total>1000000)return;
+  if(!Number.isInteger(data.wins)||!Number.isInteger(data.losses)||data.wins+data.losses!==data.total||!Number.isFinite(data.balance))return;
+  total=data.total;wins=data.wins;losses=data.losses;balance=data.balance;
+  Object.assign(demoLedger,{total,wins,losses,balance,recent:data.recent.slice(0,25),last:data.recent[0]||null,lastByTrader:Array(12).fill(null)});
+  for(const op of demoLedger.recent){
+   if(!op||!names.includes(op.name)||!['EUR/USD','GBP/USD','USD/JPY','AUD/USD'].includes(op.asset)||typeof op.win!=='boolean'||!Number.isFinite(op.v))continue;
+   demoLedger.lastByTrader[names.indexOf(op.name)]??=op;
+  }
+  $('total').textContent=total;$('wins').textContent=wins;$('losses').textContent=losses;
+  $('balance').textContent=money(balance);$('winRate').textContent=(total?100*wins/total:0).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';
+  for(const op of [...demoLedger.recent].reverse()){
+   if(!op||!names.includes(op.name)||!Number.isFinite(op.v))continue;
+   const row=document.createElement('tr');row.innerHTML='<td>'+op.name+'</td><td>'+op.asset+'</td><td>'+op.strategy+'</td><td class="'+(op.win?'win':'loss')+'">'+(op.win?'WIN DEMO':'LOSS DEMO')+'</td><td>'+money(op.v)+'</td>';$('history').prepend(row);
+  }
+  if(demoLedger.last){
+   const op=demoLedger.last;
+   $('headline').textContent='Demonstração recuperada · '+total+' operações simuladas';
+   $('lastOperation').textContent='Histórico local da demonstração · Última: '+op.name+' · '+op.asset+' · '+(op.win?'WIN':'LOSS')+' · '+money(op.v)+' · Saldo demo '+money(balance);
+  }
+  charts.filter(c=>c.big).forEach(drawBigChart);updateCharts();
+ }catch(e){console.warn('Histórico demo não pôde ser recuperado',e)}
+}
+restoreDemoHistory();
 const isMobile=matchMedia('(max-width: 750px)').matches;
-const qualityModes=['Auto','Econômica','Alta'];let qualityIndex=0;
+const qualityModes=['Auto','Econômica','Alta'];let qualityIndex=0,qualityFps=0;let fpsFrames=0,fpsLast=0;
 $('quality').onclick=()=>{
  qualityIndex=(qualityIndex+1)%qualityModes.length;
  const ratio=qualityIndex===1?1:qualityIndex===2?Math.min(devicePixelRatio,1.7):Math.min(devicePixelRatio,isMobile?1.25:1.5);
  renderer.setPixelRatio(ratio);
  renderer.shadowMap.enabled=qualityIndex!==1;
- $('quality').textContent='⚙️ Qualidade: '+qualityModes[qualityIndex];
+ $('quality').textContent='⚙️ Qualidade: '+qualityModes[qualityIndex];fpsLast=0;fpsFrames=0;
  resize();
 };
 function resize(){const r=canvas.getBoundingClientRect();if(r.width&&r.height){camera.aspect=r.width/r.height;camera.updateProjectionMatrix();renderer.setSize(r.width,r.height,false)}}new ResizeObserver(resize).observe(canvas);resize();
@@ -540,5 +571,18 @@ $('avatarTest').onclick=()=>{
  else $('avatarStatus').textContent='Equipe original de 12 traders · versão anterior';
 };
 updateShift(0);
-const clock=new THREE.Clock();function frame(){requestAnimationFrame(frame);const t=clock.getElapsedTime();if(document.hidden)return;updateTeam(t);people.forEach((p,i)=>{const cycle=(t*.22+i*1.41)%(Math.PI*2);const going=false;p.walk=false;p.group.position.set(p.x,0,p.z+1);p.group.rotation.y=Math.PI;p.head.rotation.z=Math.sin(t*2+i)*.06;p.head.rotation.x=.12+Math.sin(t*.9+i)*.025;p.head.scale.y=(Math.sin(t*1.6+i*1.8)>.995?.94:1);p.smile.scale.x=t<p.celebrate?(p.win?1.4:.55):1;signals[i].material.opacity=Math.max(0,Math.min(1,(p.celebrate-t)*1.5));signals[i].position.y=2.38+(signals[i].material.opacity?Math.sin(t*5)*.055:0);p.arms.forEach((arm,k)=>{arm.rotation.z=(k===0?-.09:.09)+(t<p.celebrate?Math.sin(t*4+i)*.08:Math.sin(t*8+i+k*Math.PI)*.045);arm.rotation.x=-1.2+Math.sin(t*9+i+k*Math.PI)*.065});p.legs.forEach((leg,k)=>{leg.rotation.x=going?Math.sin(t*8+i+k*Math.PI)*.3:0})});controls.update();renderer.render(scene,camera)}frame();
+const clock=new THREE.Clock();function frame(){requestAnimationFrame(frame);const t=clock.getElapsedTime();if(document.hidden){fpsLast=0;fpsFrames=0;return}updateTeam(t);people.forEach((p,i)=>{const cycle=(t*.22+i*1.41)%(Math.PI*2);const going=false;p.walk=false;p.group.position.set(p.x,0,p.z+1);p.group.rotation.y=Math.PI;p.head.rotation.z=Math.sin(t*2+i)*.06;p.head.rotation.x=.12+Math.sin(t*.9+i)*.025;p.head.scale.y=(Math.sin(t*1.6+i*1.8)>.995?.94:1);p.smile.scale.x=t<p.celebrate?(p.win?1.4:.55):1;signals[i].material.opacity=Math.max(0,Math.min(1,(p.celebrate-t)*1.5));signals[i].position.y=2.38+(signals[i].material.opacity?Math.sin(t*5)*.055:0);p.arms.forEach((arm,k)=>{arm.rotation.z=(k===0?-.09:.09)+(t<p.celebrate?Math.sin(t*4+i)*.08:Math.sin(t*8+i+k*Math.PI)*.045);arm.rotation.x=-1.2+Math.sin(t*9+i+k*Math.PI)*.065});p.legs.forEach((leg,k)=>{leg.rotation.x=going?Math.sin(t*8+i+k*Math.PI)*.3:0})});controls.update();renderer.render(scene,camera);
+ // Adaptive pixel ratio in Auto mode, measured in the browser on the actual device.
+ if(qualityIndex===0){
+  const now=performance.now();if(!fpsLast)fpsLast=now;fpsFrames++;
+  if(now-fpsLast>=4000){
+   const fps=Math.round(fpsFrames*1000/(now-fpsLast));
+   qualityFps=fps;const cap=Math.min(devicePixelRatio,isMobile?1.25:1.5),ratio=renderer.getPixelRatio();
+   if(fps<24&&ratio>.82)renderer.setPixelRatio(Math.max(.82,ratio-.13));
+   else if(fps>47&&ratio<cap-.04)renderer.setPixelRatio(Math.min(cap,ratio+.06));
+   $('quality').textContent='⚙️ Qualidade: Auto · '+fps+' fps';
+   fpsLast=now;fpsFrames=0;
+  }
+ }
+}frame();
 </script></body></html>
