@@ -8,7 +8,7 @@
 <div class="stats"><div class="stat"><span>Operações fictícias</span><b id="total">0</b></div><div class="stat"><span>Vitórias</span><b class="win" id="wins">0</b></div><div class="stat"><span>Derrotas</span><b class="loss" id="losses">0</b></div><div class="stat"><span>Saldo simulado</span><b id="balance">R$ 0,00</b></div><div class="stat"><span>Assertividade demo</span><b id="winRate">0,0%</b></div></div>
 <div class="panel" id="detail">👥 Selecione um dos 12 traders para visualizar sua estratégia.</div>
 <h3>Histórico das operações demonstrativas</h3><section><table><thead><tr><th>Trader</th><th>Ativo</th><th>Estratégia</th><th>Resultado</th><th>Valor</th></tr></thead><tbody id="history"></tbody></table></section>
-<p class="hint">Esta versão usa geometria 3D original, produzida por código. A equipe Tiger tem 6 homens e 6 mulheres diferentes, com ternos e emblema original de tigre. Nove trabalham sentados, um descansa no sofá, outro toma café e um supervisiona. As pausas se alternam gradualmente a cada 80 segundos, com estados de trabalho, caminhada, descanso e supervisão. Os lugares do sofá e do café são reservados até ficarem livres. O supervisor visita as mesas e quem termina a pausa retorna à própria estação. São avatares 3D estilizados originais, não modelos The Sims nem GLB importados. Os pacotes gratuitos de móveis Kenney/reodesuxz e animações Mixamo ainda não foram incorporados. Os gráficos de candles são ilustrativos. As telas mostram os resultados efetivamente registrados pela simulação, mas não são ordens reais, cotações reais ou saldo de corretora. Para mostrar resultados reais, é necessária uma integração autenticada com a corretora. Personagens estilizados fazem movimentos simples, não são modelos do The Sims.</p></main>
+<p class="hint">Esta versão usa geometria 3D original, produzida por código. A equipe Tiger tem 6 homens e 6 mulheres diferentes, com ternos e emblema original de tigre. Nove trabalham sentados, um descansa no sofá, outro toma café e um supervisiona. As pausas se alternam gradualmente a cada 80 segundos, com estados de trabalho, caminhada, descanso, supervisão e visitas ao banheiro com porta. Os lugares do sofá e do café são reservados até ficarem livres. O supervisor visita as mesas e quem termina a pausa retorna à própria estação. São avatares 3D estilizados originais, não modelos The Sims nem GLB importados. Os pacotes gratuitos de móveis Kenney/reodesuxz e animações Mixamo ainda não foram incorporados. Os gráficos de candles são ilustrativos. As telas mostram os resultados efetivamente registrados pela simulação, mas não são ordens reais, cotações reais ou saldo de corretora. Para mostrar resultados reais, é necessária uma integração autenticada com a corretora. Personagens estilizados fazem movimentos simples, não são modelos do The Sims.</p></main>
 <script type="module">
 import * as THREE from 'three';import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 const $=id=>document.getElementById(id), canvas=$('scene'),scene=new THREE.Scene();scene.background=new THREE.Color('#314858');scene.fog=new THREE.Fog('#314858',24,48);
@@ -297,7 +297,7 @@ canvas.addEventListener('pointerup',e=>{
 });
 function showDetail(){
  const role=premiumActive&&team[selected]?team[selected].role:'desk';
- const state=role==='sofa'?'descansando no sofá':role==='coffee'?'fazendo pausa para café':role==='supervisor'?'supervisionando os traders':'analisando o mercado na mesa';
+ const state=role==='sofa'?'descansando no sofá':role==='coffee'?'fazendo pausa para café':role==='supervisor'?'supervisionando os traders':role==='bathroom'?'no banheiro dos funcionários':'analisando o mercado na mesa';
  $('detail').textContent='👤 '+names[selected]+' · Estratégia: '+strategies[selected]+' · '+state+' · Operações demonstrativas';
 }
 let total=0,wins=0,losses=0,balance=0,timer=null;const money=n=>n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
@@ -452,7 +452,7 @@ function resize(){const r=canvas.getBoundingClientRect();if(r.width&&r.height){c
 // Xtreme Tiger team: twelve distinct original stylized executives (six women, six men).
 // Procedural 3D only, no unverified external character files or dependencies.
 const femaleStaff=new Set([1,3,4,6,8,10]);
-const team=[],teamRoles={sofa:-1,coffee:-1,supervisor:-1};let shiftPlan=null;
+const team=[],teamRoles={sofa:-1,coffee:-1,supervisor:-1,bathroom:-1};let shiftPlan=null;
 let premiumActive=true,lastShift=-1;
 const skinColors=['#d5a17d','#a66f52','#e8bb9c','#bf8a6c','#dfb18d','#8c5c46','#c79072','#e0aa80','#9e6c51','#e6bf9e','#bd896c','#ac7759'];
 const hairColors=['#292024','#3c2927','#3a2421','#ae7d48','#29272e','#463129','#221d24','#b28b54','#3c292e','#24232b','#5e342b','#292c31'];
@@ -591,7 +591,7 @@ function buildStaffAvatar(i){
  const tabletLogo=new THREE.Mesh(new THREE.PlaneGeometry(.175,.137),logoMaterial);
  tabletLogo.rotation.x=-Math.PI/2;tabletLogo.position.set(.19,.865,.40);
  tabletLogo.renderOrder=4;tablet.add(tabletLogo);
- const item={group:pivot,upper,sittingLegs,standingLegs,deskArms,sofaArms,standingArms,hands,strideLegs,cup,tablet,cheerArms,clapHands,celebrateUntil:0,celebrateStart:0,lossUntil:0,role:'',state:'WORKING',index:i,head:upper,route:[],walkSpeed:1.75,inspectAt:0,inspectIndex:i%6,walking:false};
+ const item={group:pivot,upper,sittingLegs,standingLegs,deskArms,sofaArms,standingArms,hands,strideLegs,cup,tablet,cheerArms,clapHands,celebrateUntil:0,celebrateStart:0,lossUntil:0,bathroomEnd:0,role:'',state:'WORKING',index:i,head:upper,route:[],walkSpeed:1.75,inspectAt:0,inspectIndex:i%6,walking:false};
  pivot.traverse(obj=>{if(obj.isMesh){obj.userData.index=i;clickTargets.push(obj)}});
  scene.add(pivot);return item;
 }
@@ -622,6 +622,9 @@ function pathBetween(from,to,fromRole,toRole,i){
   push(-5.75,7.75);push(0,7.75);push(0,2.35);
  }else if(fromRole==='coffee'){
   push(0,7.95);push(0,2.35);
+ }else if(fromRole==='bathroom'){
+  // Leave the restroom through its actual doorway, then walk the central corridor.
+  push(2.54,7.73);push(2.54,7.05);push(0,7.05);push(0,2.35);
  }else push(0,2.35);
  if(toRole==='desk'){
   const gx=nearestGap(to.x,side);
@@ -635,6 +638,8 @@ function pathBetween(from,to,fromRole,toRole,i){
   push(0,7.75);push(-5.75,7.75);
  }else if(toRole==='coffee'){
   push(0,7.95);
+ }else if(toRole==='bathroom'){
+  push(0,7.05);push(2.54,7.05);push(2.54,7.73);
  }
  path.push(to.clone());
  return path.filter((q,j)=>j===path.length-1||q.distanceTo(from)>.12)
@@ -643,6 +648,7 @@ function targetForRole(p,role){
  const i=p.index;
  if(role==='sofa')return point(-5.75,8.35);
  if(role==='coffee')return point(6.85,7.95);
+ if(role==='bathroom')return point(2.58,8.75);
  if(role==='supervisor')return point(deskSide(i)*3.52,-1.35);
  return deskPoint(i);
 }
@@ -653,15 +659,15 @@ function poseForRole(p,role,walking=false){
  p.standingLegs.visible=!seated;
  p.deskArms.visible=!walking&&role==='desk';p.cheerArms.visible=false;
  p.sofaArms.visible=!walking&&role==='sofa';
- p.standingArms.visible=walking||role==='coffee'||role==='supervisor';
+ p.standingArms.visible=walking||role==='coffee'||role==='supervisor'||role==='bathroom';
  p.cup.visible=!walking&&role==='coffee';
  p.tablet.visible=!walking&&role==='supervisor';
 }
-const stateForRole=role=>({desk:'WORKING',sofa:'RESTING',coffee:'COFFEE',supervisor:'SUPERVISING'}[role]||'WORKING');
+const stateForRole=role=>({desk:'WORKING',sofa:'RESTING',coffee:'COFFEE',supervisor:'SUPERVISING',bathroom:'RESTROOM'}[role]||'WORKING');
 function teamPosition(p,role,initial=false){
  const from=p.group.position.clone(),oldRole=p.role||'desk',to=targetForRole(p,role);
  p.role=role;
- if(initial){p.group.position.copy(to);p.group.rotation.y=role==='sofa'?Math.PI:role==='coffee'?Math.PI*.86:Math.PI;p.route=[];p.walking=false;p.state=stateForRole(role);poseForRole(p,role);return}
+ if(initial){p.group.position.copy(to);p.group.rotation.y=role==='sofa'?Math.PI:role==='coffee'?Math.PI*.86:Math.PI;p.route=[];p.walking=false;p.state=stateForRole(role);p.bathroomEnd=role==='bathroom'?19:0;poseForRole(p,role);return}
  // The previous activity finishes; walk back to the assigned desk or next break.
  p.route=pathBetween(from,to,oldRole,role,p.index);
  p.walking=true;p.state=role==='desk'?'RETURNING':'WALKING';poseForRole(p,role,true);
@@ -669,7 +675,7 @@ function teamPosition(p,role,initial=false){
 }
 function walkStaff(p,dt,t){
  if(!p.route.length){
-  if(p.walking){p.walking=false;p.state=stateForRole(p.role);poseForRole(p,p.role);p.group.position.copy(targetForRole(p,p.role));p.group.rotation.y=p.role==='coffee'?Math.PI*.86:Math.PI;}else if(p.role==='supervisor')p.state='SUPERVISING';
+  if(p.walking){p.walking=false;p.state=stateForRole(p.role);poseForRole(p,p.role);p.group.position.copy(targetForRole(p,p.role));p.group.rotation.y=p.role==='coffee'?Math.PI*.86:Math.PI;if(p.role==='bathroom')p.bathroomEnd=t+18;}else if(p.role==='supervisor')p.state='SUPERVISING';
   return;
  }
  const target=p.route[0],dx=target.x-p.group.position.x,dz=target.z-p.group.position.z,dist=Math.hypot(dx,dz),step=p.walkSpeed*dt;
@@ -706,10 +712,10 @@ function updateShift(t){
  if(shift!==lastShift){
   const initial=lastShift<0;
   lastShift=shift;
-  const picks={sofa:shift%12,coffee:(shift+4)%12,supervisor:(shift+8)%12};
+  const picks={sofa:shift%12,coffee:(shift+4)%12,supervisor:(shift+8)%12,bathroom:(shift+10)%12};
   if(initial){
    for(const p of team){
-    const role=p.index===picks.sofa?'sofa':p.index===picks.coffee?'coffee':p.index===picks.supervisor?'supervisor':'desk';
+    const role=p.index===picks.sofa?'sofa':p.index===picks.coffee?'coffee':p.index===picks.supervisor?'supervisor':p.index===picks.bathroom?'bathroom':'desk';
     teamPosition(p,role,true);
    }
    Object.assign(teamRoles,picks);
@@ -721,7 +727,7 @@ function updateShift(t){
   }
  }
  if(!shiftPlan)return;
- for(const role of ['sofa','coffee','supervisor']){
+ for(const role of ['sofa','coffee','supervisor','bathroom']){
   const id=shiftPlan[role];
   if(id===null||id===undefined)continue;
   const next=team[id];
@@ -729,7 +735,7 @@ function updateShift(t){
   const dest=targetForRole(next,role);
   // Capacity: only one person on the sofa and one at the coffee counter.
   // The previous user has to vacate before the next approaches.
-  const radius=role==='supervisor'?0.65:1.45;
+  const radius=role==='supervisor'?0.65:role==='bathroom'?1.1:1.45;
   const occupied=team.some(p=>p!==next&&Math.hypot(p.group.position.x-dest.x,p.group.position.z-dest.z)<radius);
   if(occupied)continue;
   teamPosition(next,role);
@@ -739,7 +745,7 @@ function updateShift(t){
  if(Object.values(shiftPlan).every(v=>v===null))shiftPlan=null;
  if(premiumActive){
   const label=role=>teamRoles[role]>=0?names[teamRoles[role]]:'aguardando';
-  $('avatarStatus').textContent='🚶 Supervisor '+label('supervisor')+' · ☕ '+label('coffee')+' · 🛋️ '+label('sofa')+' · rodízio gradual (80 s)';
+  $('avatarStatus').textContent='🚶 Supervisor '+label('supervisor')+' · ☕ '+label('coffee')+' · 🛋️ '+label('sofa')+' · 🚻 '+label('bathroom')+' · rodízio gradual (80 s)';
  }
 }
 let lastTeamFrame=0;
@@ -754,7 +760,7 @@ function updateTeam(t){
   const rise=cheering?Math.min(1,(t-p.celebrateStart)/.35):0;
   p.upper.position.y=p.role==='sofa'?0:p.role==='desk'?Math.max(0,rise)*.42:.42;
   p.sittingLegs.visible=p.role==='sofa'||(p.role==='desk'&&!cheering);
-  p.standingLegs.visible=p.role==='coffee'||p.role==='supervisor'||cheering;
+  p.standingLegs.visible=p.role==='coffee'||p.role==='supervisor'||p.role==='bathroom'||cheering;
   p.group.position.y=p.role==='sofa'?.10:cheering?Math.abs(Math.sin(t*8+i))*.032:0;
   p.upper.rotation.y=Math.sin(t*.6+i)*.018;
   p.upper.rotation.z=0;p.upper.rotation.x=0;
@@ -778,6 +784,9 @@ function updateTeam(t){
   }else if(p.role==='supervisor'){
    p.tablet.rotation.y=Math.sin(t*.7)*.12;p.upper.rotation.z=Math.sin(t*.6+i)*.025;
    patrolSupervisor(p,t);
+  }else if(p.role==='bathroom'){
+   p.upper.rotation.z=Math.sin(t*.6+i)*.008;
+   if(p.bathroomEnd&&t>=p.bathroomEnd){p.bathroomEnd=0;teamPosition(p,'desk');teamRoles.bathroom=-1;}
   }
  }
 }
