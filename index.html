@@ -2,7 +2,7 @@
 <style>*{box-sizing:border-box}body{margin:0;background:#0b1420;color:#e5f4f5;font:14px system-ui,sans-serif}header{padding:12px 16px;background:#152536;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}h1{font-size:18px;margin:0}small,.hint{color:#a6bfc6}button{border:1px solid #476270;background:#233d4b;color:#eefbfb;padding:10px 13px;border-radius:9px;cursor:pointer}button.primary{background:#19795f;border-color:#2ebc90}button:disabled{opacity:.5}main{max-width:1300px;margin:auto;padding:12px}.controls{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:10px}.cameraTools{width:100%;background:#152837;border:1px solid #344f60;border-radius:9px;padding:8px 11px}.cameraTools summary{cursor:pointer;font-weight:600;color:#b6dde3}.cameraTools .controls{padding-top:10px;margin:0}.stage{height:min(66vh,720px);min-height:390px;border:1px solid #405e70;position:relative;overflow:hidden;border-radius:15px;background:linear-gradient(#1b3344,#475f70)}#scene{width:100%;height:100%;display:block;touch-action:none}.board{position:absolute;top:10px;left:10px;background:#071b27e8;border:1px solid #60d4a6;border-radius:10px;padding:10px 12px;max-width:min(330px,75%);pointer-events:none}.screenInspector{display:none;position:absolute;z-index:15;top:56px;right:10px;width:min(390px,calc(100% - 20px));max-height:calc(100% - 68px);overflow:auto;background:#071c29f2;border:1px solid #70cdb0;border-radius:14px;box-shadow:0 12px 42px #000a;padding:13px 14px;backdrop-filter:blur(9px);pointer-events:auto}.screenInspector.open{display:block}.screenInspector h3{margin:0 0 7px;font-size:17px;color:#bdf6dc}.screenInspector .inspectorHeader{display:flex;gap:8px;align-items:center;justify-content:space-between}.screenInspector .inspectorHeadButtons{display:flex;gap:5px}.screenInspector button{padding:7px 9px}.screenInspector .summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin:9px 0}.screenInspector .summary span{background:#18394a;padding:8px;border-radius:7px;font-size:12px}.screenInspector .summary b{font-size:15px;color:#a9f3c6}.screenInspector .miniOp{padding:6px;border-bottom:1px solid #2c5263;font-size:12px}.screenInspector .miniOp strong{font-weight:700}.confettiPiece{position:absolute;z-index:14;pointer-events:none;top:-20px;width:9px;height:14px;animation:fallConfetti var(--dur,2.5s) linear forwards;transform:rotate(0)}@keyframes fallConfetti{to{top:110%;transform:translateX(var(--dx,0px)) rotate(var(--turn,620deg));opacity:0}}.winToast{display:none;position:absolute;z-index:16;top:20%;left:50%;transform:translateX(-50%);width:max-content;max-width:90%;padding:13px 18px;border-radius:16px;background:#103828ee;border:2px solid #73f4a9;color:#dcffe9;font-weight:900;font-size:24px;pointer-events:none;text-align:center;box-shadow:0 8px 25px #000a}.winToast.active{display:block;animation:winPulse .25s ease-out}@keyframes winPulse{from{transform:translateX(-50%) scale(.75)}to{transform:translateX(-50%) scale(1)}}.board strong{display:block;color:#75f1b9;font-size:12px}.board span{display:block;font-size:13px}.info{position:absolute;right:10px;bottom:10px;background:#071b27db;border-radius:8px;padding:8px 10px;pointer-events:none;font-size:12px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0}.stat,.panel{background:#182d3d;border:1px solid #345364;padding:13px;border-radius:11px}.stat b{display:block;font-size:23px}.stat span{font-size:12px;color:#a6bfc6}.win{color:#5bdfaa}.loss{color:#ff8f93}.panel{margin:12px 0}section{overflow:auto}table{width:100%;border-collapse:collapse;min-width:520px}td,th{text-align:left;border-bottom:1px solid #304859;padding:9px}th{color:#b3cbd4}.hint{font-size:12px}#fallback{display:none;position:absolute;inset:30% 8%;text-align:center} @media(max-width:620px){.stage{height:62vh;min-height:440px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.board{padding:8px}.board span{font-size:12px}}</style>
 <script type="importmap">{"imports":{"three":"https://esm.sh/three@0.170.0","three/addons/":"https://esm.sh/three@0.170.0/examples/jsm/"}}</script></head>
 <body><header><h1>🐯 XTREME TIGER <small>· Trader Office 3D</small></h1><b class="win">● DEMONSTRAÇÃO</b></header><main>
-<div class="controls"><button id="start" class="primary">▶ Iniciar demo</button><button id="pause">⏸ Pausar</button><button id="reset">↺ Zerar</button><button id="camera">🎥 Vista geral</button><details class="cameraTools"><summary>🎥 Mais câmeras e desempenho</summary><div class="controls"><button id="camLeft">🏢 Sala esquerda</button><button id="camRight">📈 Sala direita</button><button id="camHall">🚶 Corredor</button><button id="camLounge">☕ Recepção</button><button id="quality">⚙️ Qualidade: Auto</button></div></details><button id="soundToggle" aria-pressed="false">🔇 Ativar sons</button><button id="avatarTest" class="primary">↩ Ver equipe original</button><small id="avatarStatus" aria-live="polite">🐯 Equipe Tiger · 6 homens e 6 mulheres · rodízio automático</small><small>Arraste para girar · toque numa TV/monitor para ampliar · no foco, arraste para centralizar</small></div>
+<div class="controls"><button id="start" class="primary">▶ Iniciar demo</button><button id="pause">⏸ Pausar</button><button id="reset">↺ Zerar</button><button id="camera">🎥 Vista geral</button><details class="cameraTools"><summary>🎥 Mais câmeras e desempenho</summary><div class="controls"><button id="camLeft">🏢 Sala esquerda</button><button id="camRight">📈 Sala direita</button><button id="camHall">🚶 Corredor</button><button id="camLounge">☕ Recepção</button><button id="quality">⚙️ Qualidade: Auto</button></div></details><button id="soundToggle" aria-pressed="false">🔇 Ativar sons</button><button id="phoneTest" title="Ouvir agora o telefone da recepção">☎️ Testar telefone</button><button id="avatarTest" class="primary">↩ Ver equipe original</button><small id="avatarStatus" aria-live="polite">🐯 Equipe Tiger · 6 homens e 6 mulheres · rodízio automático</small><small>Arraste para girar · toque numa TV/monitor para ampliar · no foco, arraste para centralizar</small></div>
 <div class="stage"><canvas id="scene"></canvas><div id="fallback">Não foi possível carregar o motor 3D. Verifique a conexão com a internet.</div><div class="board"><strong>🐯 XTREME TIGER · LOUSA DIGITAL</strong><span id="headline">Equipe analisando o mercado fictício…</span></div><div class="info">🏙️ 2 salas de luxo · Toque numa tela para visualizar</div><div id="inspector" class="screenInspector" role="region" aria-label="Resultados na tela"><div class="inspectorHeader"><h3 id="screenTitle">📊 Tela</h3><div class="inspectorHeadButtons"><button id="focusReset">🎯</button><button id="closeInspector" aria-label="Fechar inspeção">✕</button></div></div><small id="screenSource">SIMULAÇÃO · Sem corretora</small><div class="summary" id="screenSummary"></div><strong>Últimas operações nesta tela</strong><div id="screenOps"></div><small>Arraste sobre o cenário para deslocar o foco. Pinça para zoom. Volte ao escritório para girar 360°.</small></div><div id="winToast" class="winToast" aria-live="polite"></div></div>
 <div class="panel" id="dataStatus" aria-live="polite"><strong>📡 Origem: DEMONSTRAÇÃO · Sem corretora conectada</strong><div id="lastOperation">Inicie a demonstração para ver os resultados das operações simuladas nas telas do escritório.</div></div>
 <div class="stats"><div class="stat"><span>Operações fictícias</span><b id="total">0</b></div><div class="stat"><span>Vitórias</span><b class="win" id="wins">0</b></div><div class="stat"><span>Derrotas</span><b class="loss" id="losses">0</b></div><div class="stat"><span>Saldo simulado</span><b id="balance">R$ 0,00</b></div><div class="stat"><span>Assertividade demo</span><b id="winRate">0,0%</b></div></div>
@@ -55,8 +55,8 @@ walnut=new THREE.MeshStandardMaterial({color:'#5d4338',metalness:0,roughness:.39
 navy=mat('#273c55'),cream=mat('#e9e2d4'),stone=mat('#a9a9a3');
 function glassWall(x,y,z,w,h,d){box(w,h,d,glass,x,y,z);box(w,.075,d+.065,trim,x,y+h/2,z);box(w,.075,d+.065,trim,x,y-h/2,z)}
 // A 2.3m central passage running from the entrance/reception to the back wall.
-box(2.22,.032,15.5,walnut,0,.03,1.8);
-for(let z=-5.2;z<9.2;z+=1.2){box(2.18,.012,.026,brass,0,.054,z);}
+box(2.22,.055,15.5,walnut,0,.059,1.8);
+for(let z=-5.2;z<9.2;z+=1.2){box(2.18,.012,.026,brass,0,.091,z);}
 for(const side of [-1,1]){
  const xx=side*1.17;
  // Each room is enclosed by a glazed partition with its own wide doorway.
@@ -111,7 +111,7 @@ for(const side of [-1,1]){
 const skylineMat=['#728d9f','#94a9b3','#627d90','#849aa5','#a2b4bd','#647f8b'];
 for(const side of [-1,1]){
  for(let k=0;k<15;k++){
-  const z=-7+k*1.3,far=side*(10.1+(k%3)*1.4),h=2.2+((k*7)%8)*.58;
+  const z=-7+k*1.3,far=side*(14.3+(k%3)*1.6),h=2.2+((k*7)%8)*.58;
   const tower=box(1.25+(k%3)*.35,h,1.12,mat(skylineMat[k%6]),far,h/2-.6,z);
   tower.castShadow=false;
   const face=far-side*(.66+(k%3)*.17);
@@ -119,6 +119,37 @@ for(const side of [-1,1]){
    const win=box(.024,.15,.22,mat(k%3===0?'#f3d6a0':'#b8dbe2'),face,yy,z-.30);
    win.castShadow=false;
   }
+ }
+}
+// Outside both panoramic facades: urban streets, sidewalks, planting and animated cars.
+const exteriorTraffic=[];
+const roadSurface=mat('#313b45'),pavement=mat('#c5b9a6'),roadStripe=mat('#efe3bd'),treeTrunk=mat('#705742'),treeLeaf=mat('#3c8060');
+for(const side of [-1,1]){
+ const roadX=side*10.25;
+ const road=box(2.5,.075,25,roadSurface,roadX,-.10,1.0);road.castShadow=false;
+ const sidewalk=box(1.45,.15,25,pavement,side*12.65,-.055,1.0);sidewalk.castShadow=false;
+ for(let z=-9.2;z<11.2;z+=1.95){
+  const divider=box(.075,.012,.90,roadStripe,roadX,-.051,z);divider.castShadow=false;
+ }
+ for(let z=-8.0;z<11;z+=3.05){
+  box(.15,.82,.15,treeTrunk,side*12.55,.46,z);
+  const crown=new THREE.Mesh(new THREE.IcosahedronGeometry(.68,0),treeLeaf);
+  crown.position.set(side*12.55,1.36,z);crown.castShadow=false;scene.add(crown);
+  const crownTop=new THREE.Mesh(new THREE.IcosahedronGeometry(.47,0),mat('#569b70'));
+  crownTop.position.set(side*12.58,1.86,z+.17);crownTop.castShadow=false;scene.add(crownTop);
+ }
+ for(let j=0;j<4;j++){
+  const car=new THREE.Group(),bodyColor=mat(['#c74e45','#e2dbd1','#375f90','#b6a2cc'][j]);
+  car.position.set(roadX+side*(j%2===0?-.50:.48),.12,-8+j*5.3);scene.add(car);
+  const chassis=box(.72,.24,1.22,bodyColor,0,.13,0,car);
+  const cabin=box(.62,.28,.67,mat('#537689'),0,.37,-.06,car);
+  const windshield=box(.56,.013,.25,mat('#a5bfc5'),0,.515,-.22,car);
+  for(const dx of [-.37,.37])for(const dz of [-.39,.40]){
+   const wheel=new THREE.Mesh(new THREE.CylinderGeometry(.13,.13,.09,10),mat('#20282f'));
+   wheel.rotation.z=Math.PI/2;wheel.position.set(dx,.035,dz);wheel.castShadow=false;car.add(wheel);
+  }
+  chassis.castShadow=false;cabin.castShadow=false;windshield.castShadow=false;
+  exteriorTraffic.push({group:car,initial:car.position.z,speed:(j%2===0?1:-1)*(1.2+j*.24)});
  }
 }
 // Sunlight entering from the right panoramic windows, with translucent light pools.
@@ -188,6 +219,31 @@ box(1.45,.12,.8,wood,-3.6,.43,6.85);
 for(const d of [-1,1])box(.08,.39,.08,steel,-3.6+d*.56,.21,6.85);
 box(3.0,2.65,.09,mat('#27404c'),-5.7,1.55,5.20);
 bigTV('USD/JPY',-5.7,2.0,5.34,2.15,1.18,28);
+// Compact employee restroom accessed from reception, with a hinged door.
+// The roof is intentionally open so the bathroom remains visible from the 3D camera.
+const restroomWall=mat('#e7ded0'),restroomTile=mat('#aaa49e'),restroomFixture=mat('#f4f2e9'),restroomMetal=mat('#b6aaa1',.32);
+box(2.9,.042,2.65,restroomTile,3.05,.073,8.73);
+box(.14,2.75,2.55,restroomWall,1.61,1.43,8.74);
+box(.14,2.75,2.55,restroomWall,4.48,1.43,8.74);
+box(2.86,2.75,.14,restroomWall,3.05,1.43,10.03);
+box(.48,2.75,.14,restroomWall,1.85,1.43,7.46);
+box(1.50,2.75,.14,restroomWall,3.72,1.43,7.46);
+box(.095,2.85,.16,brass,2.09,1.45,7.46);
+box(.095,2.85,.16,brass,2.97,1.45,7.46);
+const restroomDoor=new THREE.Group();restroomDoor.position.set(2.09,0,7.46);scene.add(restroomDoor);
+box(.84,2.42,.067,mat('#8a6550'),.44,1.25,0,restroomDoor);
+ball(.045,brass,.72,1.12,.09,restroomDoor);
+const restroomDoorLabel=document.createElement('canvas');restroomDoorLabel.width=280;restroomDoorLabel.height=110;
+const wcCtx=restroomDoorLabel.getContext('2d');wcCtx.fillStyle='#e7d6aa';wcCtx.fillRect(0,0,280,110);wcCtx.textAlign='center';wcCtx.font='bold 36px sans-serif';wcCtx.fillStyle='#293b3f';wcCtx.fillText('BANHEIRO',140,70);
+const wcSign=new THREE.Mesh(new THREE.PlaneGeometry(.65,.26),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(restroomDoorLabel),side:THREE.DoubleSide}));
+wcSign.position.set(3.7,2.41,7.365);scene.add(wcSign);
+box(.57,.36,.72,restroomFixture,3.61,.32,9.32);
+box(.42,.30,.36,restroomFixture,3.61,.72,9.56);
+box(.75,.12,.46,restroomFixture,2.21,.86,9.55);
+box(.27,.29,.27,restroomMetal,2.23,1.06,9.67);
+const mirror=box(.73,.78,.035,mat('#9fc6cb',.55),2.23,1.58,9.96);mirror.castShadow=false;
+let restroomDoorAmount=0;
+// Plant decor kept outside the restroom entrance.
 const leaf=mat('#3b956c'),pot=mat('#ccaf8c');function plant(x,z){box(.45,.55,.45,pot,x,.3,z);for(let n=0;n<5;n++){const q=new THREE.Mesh(new THREE.ConeGeometry(.23,.9,7),leaf);q.position.set(x+Math.cos(n*1.25)*.2,1.0,z+Math.sin(n*1.25)*.2);scene.add(q)}}plant(-7,6.15);plant(7,8.8);plant(-7,-4.7);
 box(2.2,.035,1.35,mat('#a5b9b2'),3,.03,7.15);box(.85,.2,.65,wood,3,.36,7.15);
 // Removed decorative wall pictures that were overlapping the trading screens.
@@ -310,19 +366,26 @@ function phoneRing(){
  // Classic two-tone reception telephone: double ring, then silence.
  for(let ring=0;ring<2;ring++)for(let n=0;n<5;n++){
   const t=now+ring*1.55+n*.15;
-  beep(t,.13,440,460,.035,'sine',-.55);beep(t,.13,480,505,.033,'sine',-.55);
+  beep(t,.145,440,455,.135,'sine',-.45);beep(t,.145,480,500,.115,'triangle',-.45);
  }
  $('headline').textContent='☎️ Telefone tocando na recepção · Xtreme Tiger';
 }
 $('soundToggle').onclick=()=>{
  if(!officeSoundEnabled){
   if(!activateOfficeAudio()){$('soundToggle').textContent='Áudio indisponível';return;}
-  officeSoundEnabled=true;phoneSequenceIndex=0;scheduleReceptionPhone();
+  officeSoundEnabled=true;phoneSequenceIndex=0;scheduleReceptionPhone();phoneRing();
   $('soundToggle').textContent='🔊 Som ligado';$('soundToggle').setAttribute('aria-pressed','true');
  }else{
   officeSoundEnabled=false;clearTimeout(phoneInterval);phoneInterval=null;
   $('soundToggle').textContent='🔇 Ativar sons';$('soundToggle').setAttribute('aria-pressed','false');
  }
+};
+$('phoneTest').onclick=()=>{
+ if(!officeSoundEnabled){
+  if(!activateOfficeAudio()){$('soundToggle').textContent='Áudio indisponível';return;}
+  officeSoundEnabled=true;phoneSequenceIndex=0;scheduleReceptionPhone();$('soundToggle').textContent='🔊 Som ligado';$('soundToggle').setAttribute('aria-pressed','true');
+ }else activateOfficeAudio();
+ phoneRing();
 };
 function celebrateWin(op){
  const now=clock.getElapsedTime();
@@ -418,6 +481,9 @@ carpetCtx.font='bold 23px system-ui';carpetCtx.fillStyle='#a0efc8';carpetCtx.fil
 const carpetLogoTex=new THREE.CanvasTexture(carpetLogoCanvas);carpetLogoTex.colorSpace=THREE.SRGBColorSpace;
 const carpetLogo=new THREE.Mesh(new THREE.PlaneGeometry(2.9,1.45),new THREE.MeshBasicMaterial({map:carpetLogoTex,side:THREE.DoubleSide,depthWrite:false}));
 carpetLogo.rotation.x=-Math.PI/2;carpetLogo.position.set(-5.3,.058,7.18);scene.add(carpetLogo);
+// Matching printed Tiger branding on the brown walnut central corridor runner.
+const corridorLogo=new THREE.Mesh(new THREE.PlaneGeometry(2.02,1.55),new THREE.MeshBasicMaterial({map:carpetLogoTex,side:THREE.DoubleSide,depthWrite:false}));
+corridorLogo.rotation.x=-Math.PI/2;corridorLogo.position.set(0,.102,0.45);scene.add(corridorLogo);
 function buildStaffAvatar(i){
  const woman=femaleStaff.has(i),pivot=new THREE.Group(),upper=new THREE.Group(),sittingLegs=new THREE.Group(),standingLegs=new THREE.Group(),deskArms=new THREE.Group(),sofaArms=new THREE.Group(),standingArms=new THREE.Group();
  pivot.add(sittingLegs,standingLegs,upper);upper.add(deskArms,sofaArms,standingArms);
@@ -724,7 +790,10 @@ $('avatarTest').onclick=()=>{
  else $('avatarStatus').textContent='Equipe original de 12 traders · versão anterior';
 };
 updateShift(0);
-const clock=new THREE.Clock();function frame(){requestAnimationFrame(frame);const t=clock.getElapsedTime();if(document.hidden){fpsLast=0;fpsFrames=0;return}updateTeam(t);people.forEach((p,i)=>{const cycle=(t*.22+i*1.41)%(Math.PI*2);const going=false;p.walk=false;p.group.position.set(p.x,0,p.z+1);p.group.rotation.y=Math.PI;p.head.rotation.z=Math.sin(t*2+i)*.06;p.head.rotation.x=.12+Math.sin(t*.9+i)*.025;p.head.scale.y=(Math.sin(t*1.6+i*1.8)>.995?.94:1);p.smile.scale.x=t<p.celebrate?(p.win?1.4:.55):1;signals[i].material.opacity=Math.max(0,Math.min(1,(p.celebrate-t)*1.5));signals[i].position.y=2.38+(signals[i].material.opacity?Math.sin(t*5)*.055:0);p.arms.forEach((arm,k)=>{arm.rotation.z=(k===0?-.09:.09)+(t<p.celebrate?Math.sin(t*4+i)*.08:Math.sin(t*8+i+k*Math.PI)*.045);arm.rotation.x=-1.2+Math.sin(t*9+i+k*Math.PI)*.065});p.legs.forEach((leg,k)=>{leg.rotation.x=going?Math.sin(t*8+i+k*Math.PI)*.3:0})});controls.update();renderer.render(scene,camera);
+const clock=new THREE.Clock();function frame(){requestAnimationFrame(frame);const t=clock.getElapsedTime();if(document.hidden){fpsLast=0;fpsFrames=0;return}updateTeam(t);
+for(const car of exteriorTraffic){let z=car.initial+t*car.speed;z=((z+11)%25+25)%25-11;car.group.position.z=z;}
+const bathroomNear=team.some(p=>p.role==='bathroom'||Math.abs(p.group.position.x-2.45)<1.35&&Math.abs(p.group.position.z-7.60)<1.3);
+restroomDoorAmount+=(Number(bathroomNear)-restroomDoorAmount)*.085;restroomDoor.rotation.y=-restroomDoorAmount*1.55;people.forEach((p,i)=>{const cycle=(t*.22+i*1.41)%(Math.PI*2);const going=false;p.walk=false;p.group.position.set(p.x,0,p.z+1);p.group.rotation.y=Math.PI;p.head.rotation.z=Math.sin(t*2+i)*.06;p.head.rotation.x=.12+Math.sin(t*.9+i)*.025;p.head.scale.y=(Math.sin(t*1.6+i*1.8)>.995?.94:1);p.smile.scale.x=t<p.celebrate?(p.win?1.4:.55):1;signals[i].material.opacity=Math.max(0,Math.min(1,(p.celebrate-t)*1.5));signals[i].position.y=2.38+(signals[i].material.opacity?Math.sin(t*5)*.055:0);p.arms.forEach((arm,k)=>{arm.rotation.z=(k===0?-.09:.09)+(t<p.celebrate?Math.sin(t*4+i)*.08:Math.sin(t*8+i+k*Math.PI)*.045);arm.rotation.x=-1.2+Math.sin(t*9+i+k*Math.PI)*.065});p.legs.forEach((leg,k)=>{leg.rotation.x=going?Math.sin(t*8+i+k*Math.PI)*.3:0})});controls.update();renderer.render(scene,camera);
  // Adaptive pixel ratio in Auto mode, measured in the browser on the actual device.
  if(qualityIndex===0){
   const now=performance.now();if(!fpsLast)fpsLast=now;fpsFrames++;
