@@ -227,15 +227,17 @@ function buildStaffAvatar(i){
   mesh.position.copy(v).add(w).multiplyScalar(.5);mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());mesh.castShadow=true;par.add(mesh);return mesh;
  };
  // Bent legs at desks and on the sofa.
+ const strideLegs=[];
  sph(sittingLegs,0,.75,-.06,.29,.17,.24,pants);
  for(const side of [-1,1]){
   sph(sittingLegs,side*.15,.61,.24,.145,.16,.34,pants);
   seg(sittingLegs,side*.17,.59,.17,side*.19,.48,.48,.13,.12,pants);
   seg(sittingLegs,side*.19,.48,.48,side*.19,.16,.50,.103,.082,pants);
   sph(sittingLegs,side*.19,.13,.62,.125,.085,.22,shoe);
-  seg(standingLegs,side*.15,1.13,-.02,side*.17,.55,.015,.15,.11,pants);
-  seg(standingLegs,side*.17,.55,.015,side*.18,.14,.035,.11,.08,pants);
-  sph(standingLegs,side*.18,.10,.17,.13,.095,.23,shoe);
+  const legRig=new THREE.Group();legRig.position.set(side*.15,1.13,-.02);standingLegs.add(legRig);strideLegs.push({rig:legRig,side});
+  seg(legRig,0,0,0,side*.02,-.58,.035,.15,.11,pants);
+  seg(legRig,side*.02,-.58,.035,side*.03,-.99,.055,.11,.08,pants);
+  sph(legRig,side*.03,-1.03,.19,.13,.095,.23,shoe);
  }
  sph(upper,0,1.04,-.055,woman?.31:.34,.38,.23,suit);
  sph(upper,0,1.17,.137,.145,.25,.062,white);
@@ -310,7 +312,7 @@ function buildStaffAvatar(i){
  const tablet=new THREE.Group();standingArms.add(tablet);
  box(.29,.035,.20,mat('#172c3c'),.19,.83,.40,tablet);
  const screenTab=box(.245,.009,.16,mat('#50bfa0'),.19,.856,.40,tablet);
- const item={group:pivot,upper,sittingLegs,standingLegs,deskArms,sofaArms,standingArms,hands,cup,tablet,role:'',index:i,head:upper,route:[],walkSpeed:1.75,inspectAt:0,inspectIndex:i%6,walking:false};
+ const item={group:pivot,upper,sittingLegs,standingLegs,deskArms,sofaArms,standingArms,hands,strideLegs,cup,tablet,role:'',index:i,head:upper,route:[],walkSpeed:1.75,inspectAt:0,inspectIndex:i%6,walking:false};
  pivot.traverse(obj=>{if(obj.isMesh){obj.userData.index=i;clickTargets.push(obj)}});
  scene.add(pivot);return item;
 }
@@ -380,6 +382,7 @@ function walkStaff(p,dt,t){
  if(dist>.03){const facing=Math.atan2(dx,dz),turn=Math.atan2(Math.sin(facing-p.group.rotation.y),Math.cos(facing-p.group.rotation.y));p.group.rotation.y+=turn*Math.min(1,dt*7);}
  p.upper.position.y=.42+Math.abs(Math.sin(t*9+p.index))*Math.min(.032,dist*.025);
  p.standingArms.rotation.x=Math.sin(t*8+p.index)*.075;
+ for(const leg of p.strideLegs)leg.rig.rotation.x=Math.sin(t*8+p.index+(leg.side>0?Math.PI:0))*.32;
 }
 function patrolSupervisor(p,t){
  if(p.role!=='supervisor'||p.walking||p.route.length||t<p.inspectAt)return;
@@ -421,6 +424,7 @@ function updateTeam(t){
   p.upper.rotation.y=Math.sin(t*.6+i)*.018;
   p.upper.rotation.z=0;
   p.standingArms.rotation.x=0;
+  for(const leg of p.strideLegs)leg.rig.rotation.x=0;
   if(p.role==='desk'){
    for(const h of p.hands){h.group.position.y=1.115+Math.sin(t*11+i+h.side)*.019;h.group.rotation.x=Math.sin(t*12+i+h.side)*.07;}
   }else if(p.role==='sofa'){
