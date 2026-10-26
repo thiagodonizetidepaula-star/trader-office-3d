@@ -63,9 +63,7 @@ for(const side of [-1,1]){
  box(.11,4.7,.11,brass,xx,2.35,2.6);
  box(.12,.16,.13,brass,xx-side*.13,1.33,1.8);
  // Open doorway from the central corridor into each room, with visible door leaf.
- const door=new THREE.Group();door.position.set(xx,0,2.57);scene.add(door);
- const leaf=new THREE.Mesh(new THREE.BoxGeometry(.045,2.45,1.15),glass);
- leaf.position.set(side*.50,1.28,-.47);leaf.rotation.y=side*.55;door.add(leaf);
+ // Keep the doorway open: no floating glass door leaf blocking the staff route.
  box(.065,2.5,.065,brass,xx,1.25,2.55);
  // Distinct luxury finishes: warm walnut lounge on left, marble/navy office on right.
  const center=side*4.55;
@@ -158,9 +156,10 @@ function drawBigChart(c){
   g.fillStyle='#73a6b6';g.font='14px monospace';g.fillText('GRÁFICO ILUSTRATIVO · NÃO REPRESENTA COTAÇÕES REAIS',left,bottom+19);
   g.fillStyle='#102d3c';g.fillRect(0,h-94,w,94);g.strokeStyle='#36566a';g.beginPath();g.moveTo(0,h-94);g.lineTo(w,h-94);g.stroke();
   g.fillStyle='#f2d298';g.font='bold 18px sans-serif';g.fillText('RESULTADOS DAS OPERAÇÕES · DEMONSTRAÇÃO',left,h-68);
-  g.fillStyle='#eaf6f4';g.font='bold 21px monospace';g.fillText('OPERAÇÕES '+demoLedger.total+'  ·  W '+demoLedger.wins+' / L '+demoLedger.losses,left,h-41);
-  g.fillStyle=demoLedger.balance>=0?'#57e8ad':'#ff8f93';g.font='bold 22px monospace';g.fillText('SALDO '+(demoLedger.balance>=0?'+':'')+'R$ '+demoLedger.balance.toFixed(2),left,h-12);
-  if(demoLedger.last){const op=demoLedger.last;g.fillStyle=op.win?'#65edb6':'#ff8492';g.font='bold 17px sans-serif';g.fillText('ÚLTIMA: '+op.name+' '+op.asset+' '+(op.win?'WIN':'LOSS')+' '+(op.v>0?'+':'')+'R$ '+op.v.toFixed(2),360,h-14)}
+  g.fillStyle='#eaf6f4';g.font='bold 20px monospace';g.fillText('OPERAÇÕES '+demoLedger.total+'  ·  W '+demoLedger.wins+' / L '+demoLedger.losses,left,h-40);
+  g.fillStyle=demoLedger.balance>=0?'#57e8ad':'#ff8f93';g.font='bold 20px monospace';g.fillText('SALDO '+(demoLedger.balance>=0?'+':'')+'R$ '+demoLedger.balance.toFixed(2),445,h-40);
+  if(demoLedger.last){const op=demoLedger.last;g.fillStyle=op.win?'#65edb6':'#ff8492';g.font='bold 17px sans-serif';g.fillText('ÚLTIMA: '+op.name+' '+op.asset+' '+(op.win?'WIN':'LOSS')+' '+(op.v>0?'+':'')+'R$ '+op.v.toFixed(2),left,h-12)}
+  else{g.fillStyle='#a6c5d1';g.font='17px sans-serif';g.fillText('Aguardando primeira operação demonstrativa...',left,h-12)}
   c.tex.needsUpdate=true
 }
 function bigTV(pair,x,y,z,w,h,seed){
@@ -197,7 +196,7 @@ for(const x of [-6.9,-3.1,.7,4.5]){box(.5,.08,.5,mat('#d3b57d'),x,4.78,0);const 
 for(const x of [-6.6,-3.3,0,3.3,6.6]){box(.45,.09,.45,mat('#f0d6a2'),x,4.62,-3.1)}
 // Trader accessories: glasses, headphones and additional hair details.
 people.forEach((p,i)=>{if(i===0||i===3||i===6){for(const side of [-1,1]){const lens=new THREE.Mesh(new THREE.TorusGeometry(.065,.011,6,16),mat('#172330'));lens.position.set(side*.088,.018,.242);p.head.add(lens)}box(.065,.012,.012,mat('#172330'),0,.018,.242,p.head)}if(i===2||i===5){const band=new THREE.Mesh(new THREE.TorusGeometry(.25,.025,7,28,Math.PI),mat('#252a3a'));band.rotation.z=Math.PI;band.position.set(0,.015,-.018);p.head.add(band);for(const side of [-1,1])box(.07,.16,.13,mat('#232c40'),side*.249,-.015,0,p.head)}});
-const ray=new THREE.Raycaster(),pointer=new THREE.Vector2();let down=null,selected=-1;canvas.addEventListener('pointerdown',e=>down=[e.clientX,e.clientY]);canvas.addEventListener('pointerup',e=>{if(!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>10)return;const r=canvas.getBoundingClientRect();pointer.set(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);ray.setFromCamera(pointer,camera);const hit=ray.intersectObjects(clickTargets)[0];if(hit){selected=hit.object.userData.index;showDetail()}});function showDetail(){$('detail').textContent='👤 '+names[selected]+' · Estratégia: '+strategies[selected]+' · Digitando, olhando para o computador'+' (simulação)'}
+const ray=new THREE.Raycaster(),pointer=new THREE.Vector2();let down=null,selected=-1;canvas.addEventListener('pointerdown',e=>down=[e.clientX,e.clientY]);canvas.addEventListener('pointerup',e=>{if(!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>10)return;const r=canvas.getBoundingClientRect();pointer.set(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);ray.setFromCamera(pointer,camera);const hit=ray.intersectObjects(clickTargets)[0];if(hit){selected=hit.object.userData.index;showDetail()}});function showDetail(){const role=premiumActive&&team[selected]?team[selected].role:'desk';const state=role==='sofa'?'descansando no sofá':role==='coffee'?'fazendo pausa para café':role==='supervisor'?'supervisionando os traders':'analisando o mercado na mesa';$('detail').textContent='👤 '+names[selected]+' · Estratégia: '+strategies[selected]+' · '+state+' · Operações demonstrativas'}
 let total=0,wins=0,losses=0,balance=0,timer=null;const money=n=>n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 function tick(){
  const i=Math.floor(Math.random()*people.length),win=Math.random()>.5;
