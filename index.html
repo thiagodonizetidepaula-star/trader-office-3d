@@ -8,7 +8,7 @@
 <div class="stats"><div class="stat"><span>Operações fictícias</span><b id="total">0</b></div><div class="stat"><span>Vitórias</span><b class="win" id="wins">0</b></div><div class="stat"><span>Derrotas</span><b class="loss" id="losses">0</b></div><div class="stat"><span>Saldo simulado</span><b id="balance">R$ 0,00</b></div><div class="stat"><span>Assertividade demo</span><b id="winRate">0,0%</b></div></div>
 <div class="panel" id="detail">👥 Selecione um dos 12 traders para visualizar sua estratégia.</div>
 <h3>Histórico das operações demonstrativas</h3><section><table><thead><tr><th>Trader</th><th>Ativo</th><th>Estratégia</th><th>Resultado</th><th>Valor</th></tr></thead><tbody id="history"></tbody></table></section>
-<p class="hint">Esta versão usa geometria 3D original, produzida por código. A equipe Tiger tem 6 homens e 6 mulheres diferentes, com ternos e emblema original de tigre. Nove trabalham sentados, um descansa no sofá, outro toma café e um supervisiona. As funções se alternam a cada 65 segundos, com deslocamento animado pelo corredor. O supervisor visita as mesas e quem termina a pausa retorna à própria estação. São avatares 3D estilizados originais, não modelos The Sims nem GLB importados. Os pacotes gratuitos de móveis Kenney/reodesuxz e animações Mixamo ainda não foram incorporados. Os gráficos de candles são ilustrativos. As telas mostram os resultados efetivamente registrados pela simulação, mas não são ordens reais, cotações reais ou saldo de corretora. Para mostrar resultados reais, é necessária uma integração autenticada com a corretora. Personagens estilizados fazem movimentos simples, não são modelos do The Sims.</p></main>
+<p class="hint">Esta versão usa geometria 3D original, produzida por código. A equipe Tiger tem 6 homens e 6 mulheres diferentes, com ternos e emblema original de tigre. Nove trabalham sentados, um descansa no sofá, outro toma café e um supervisiona. As pausas se alternam gradualmente a cada 80 segundos, com estados de trabalho, caminhada, descanso e supervisão. Os lugares do sofá e do café são reservados até ficarem livres. O supervisor visita as mesas e quem termina a pausa retorna à própria estação. São avatares 3D estilizados originais, não modelos The Sims nem GLB importados. Os pacotes gratuitos de móveis Kenney/reodesuxz e animações Mixamo ainda não foram incorporados. Os gráficos de candles são ilustrativos. As telas mostram os resultados efetivamente registrados pela simulação, mas não são ordens reais, cotações reais ou saldo de corretora. Para mostrar resultados reais, é necessária uma integração autenticada com a corretora. Personagens estilizados fazem movimentos simples, não são modelos do The Sims.</p></main>
 <script type="module">
 import * as THREE from 'three';import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 const $=id=>document.getElementById(id), canvas=$('scene'),scene=new THREE.Scene();scene.background=new THREE.Color('#314858');scene.fog=new THREE.Fog('#314858',24,48);
@@ -26,7 +26,7 @@ const coffee= new THREE.Group();coffee.position.set(5.1,0,6.9);scene.add(coffee)
 const names=['Alex','Bia','Caio','Dani','Eva','Fred','Gabi','Hugo','Lia','Leo','Maya','Rafa'],strategies=['Tendência','Bollinger','RSI','Médias móveis','Suporte','MACD','Price Action','Sniper','EMA 200','Volume','Breakout','Confluência'],colors=['#ed9478','#88adf0','#f0ce6d','#be9bf2','#f48eae','#8cddb9','#e3a46e','#78bad9','#a5ccea','#d38ea4','#77a9a3','#cea272'];
 const people=[],clickTargets=[],charts=[];
 const demoLedger={total:0,wins:0,losses:0,balance:0,last:null,recent:[],lastByTrader:Array(12).fill(null)};const positions=[[-6.55,-3.5],[-4.5,-3.5],[-2.55,-3.5],[2.55,-3.5],[4.5,-3.5],[6.55,-3.5],[-6.55,.6],[-4.5,.6],[-2.55,.6],[2.55,.6],[4.5,.6],[6.55,.6]];
-positions.forEach(([x,z],i)=>{const work=new THREE.Group();work.position.set(x,0,z);scene.add(work);box(1.45,.16,1.25,wood,0,1.05,-.2,work);for(let dx of [-.59,.59])for(let dz of [-.65,.25])box(.1,1,.1,steel,dx,.5,dz,work);box(.92,.68,.08,screen,0,1.56,-.61,work);const cv=document.createElement('canvas');cv.width=192;cv.height=112;const ctx=cv.getContext('2d'),tex=new THREE.CanvasTexture(cv);const plane=new THREE.Mesh(new THREE.PlaneGeometry(.83,.5),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide}));plane.position.set(0,1.56,-.55);work.add(plane);charts.push({ctx,tex,seed:i,prices:Array.from({length:18},(_,k)=>50+k*.5+Math.sin(k+i)*8)});box(.42,.05,.18,steel,0,1.12,-.37,work);box(.8,.1,.15,steel,0,1.11,.25,work);
+positions.forEach(([x,z],i)=>{const work=new THREE.Group();work.position.set(x,0,z);scene.add(work);box(1.12,.16,1.25,wood,0,1.05,-.2,work);for(let dx of [-.46,.46])for(let dz of [-.65,.25])box(.1,1,.1,steel,dx,.5,dz,work);box(.92,.68,.08,screen,0,1.56,-.61,work);const cv=document.createElement('canvas');cv.width=192;cv.height=112;const ctx=cv.getContext('2d'),tex=new THREE.CanvasTexture(cv);const plane=new THREE.Mesh(new THREE.PlaneGeometry(.83,.5),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide}));plane.position.set(0,1.56,-.55);work.add(plane);charts.push({ctx,tex,seed:i,prices:Array.from({length:18},(_,k)=>50+k*.5+Math.sin(k+i)*8)});box(.42,.05,.18,steel,0,1.12,-.37,work);box(.8,.1,.15,steel,0,1.11,.25,work);
 box(.85,.12,.7,chair,0,.62,1.03,work);box(.85,.9,.14,chair,0,1.05,1.36,work);box(.15,.6,.15,steel,0,.3,1,work);
 const person=new THREE.Group();person.position.set(x,0,z+1);person.rotation.y=Math.PI;scene.add(person);const shirt=mat(colors[i]),skin=mat(['#dfb48b','#a87c5d','#f0caa8','#9e674a'][i%4]),hair=mat(['#25222a','#603b27','#d8b065','#33232a'][i%4]);const head=new THREE.Group();head.position.y=1.49;person.add(head);ball(.24,skin,0,0,0,head);ball(.23,hair,0,.13,-.05,head);for(const side of [-1,1]){ball(.033,mat('#172735'),side*.085,.025,.216,head);ball(.013,mat('#ffffff'),side*.08,.03,.239,head)}box(.11,.018,.012,mat('#874653'),0,-.103,.23,head);box(.52,.61,.32,shirt,0,1.02,0,person);const arms=[];for(const side of [-1,1]){const joint=new THREE.Group();joint.position.set(side*.35,1.22,.18);person.add(joint);box(.18,.44,.18,shirt,0,-.25,.08,joint);ball(.075,skin,0,-.48,.20,joint);joint.rotation.x=-1.2;joint.rotation.z=side*.09;arms.push(joint)}const legs=[];for(const side of [-1,1])legs.push(box(.22,.49,.22,chair,side*.15,.52,0,person));// Distinct stylized game avatars: haircuts, eyes, brows, jackets and footwear.
 const styles=['short','bob','quiff','long','bun','curly','side','ponytail'];const style=styles[i],dark=mat('#15212d'),white=mat('#f5ffff'),lip=mat('#96535c'),outfit=mat(['#1e344d','#4e355b','#80533a','#25586b','#563e68','#2f5760','#744753','#2f4535'][i]);
@@ -242,7 +242,7 @@ function resize(){const r=canvas.getBoundingClientRect();if(r.width&&r.height){c
 // Xtreme Tiger team: twelve distinct original stylized executives (six women, six men).
 // Procedural 3D only, no unverified external character files or dependencies.
 const femaleStaff=new Set([1,3,4,6,8,10]);
-const team=[],teamRoles={sofa:-1,coffee:-1,supervisor:-1};
+const team=[],teamRoles={sofa:-1,coffee:-1,supervisor:-1};let shiftPlan=null;
 let premiumActive=true,lastShift=-1;
 const skinColors=['#d5a17d','#a66f52','#e8bb9c','#bf8a6c','#dfb18d','#8c5c46','#c79072','#e0aa80','#9e6c51','#e6bf9e','#bd896c','#ac7759'];
 const hairColors=['#292024','#3c2927','#3a2421','#ae7d48','#29272e','#463129','#221d24','#b28b54','#3c292e','#24232b','#5e342b','#292c31'];
@@ -358,7 +358,7 @@ function buildStaffAvatar(i){
  const tablet=new THREE.Group();standingArms.add(tablet);
  box(.29,.035,.20,mat('#172c3c'),.19,.83,.40,tablet);
  const screenTab=box(.245,.009,.16,mat('#50bfa0'),.19,.856,.40,tablet);
- const item={group:pivot,upper,sittingLegs,standingLegs,deskArms,sofaArms,standingArms,hands,strideLegs,cup,tablet,role:'',index:i,head:upper,route:[],walkSpeed:1.75,inspectAt:0,inspectIndex:i%6,walking:false};
+ const item={group:pivot,upper,sittingLegs,standingLegs,deskArms,sofaArms,standingArms,hands,strideLegs,cup,tablet,role:'',state:'WORKING',index:i,head:upper,route:[],walkSpeed:1.75,inspectAt:0,inspectIndex:i%6,walking:false};
  pivot.traverse(obj=>{if(obj.isMesh){obj.userData.index=i;clickTargets.push(obj)}});
  scene.add(pivot);return item;
 }
@@ -420,18 +420,19 @@ function poseForRole(p,role,walking=false){
  p.cup.visible=!walking&&role==='coffee';
  p.tablet.visible=!walking&&role==='supervisor';
 }
+const stateForRole=role=>({desk:'WORKING',sofa:'RESTING',coffee:'COFFEE',supervisor:'SUPERVISING'}[role]||'WORKING');
 function teamPosition(p,role,initial=false){
  const from=p.group.position.clone(),oldRole=p.role||'desk',to=targetForRole(p,role);
  p.role=role;
- if(initial){p.group.position.copy(to);p.group.rotation.y=role==='sofa'?Math.PI:role==='coffee'?Math.PI*.86:Math.PI;p.route=[];p.walking=false;poseForRole(p,role);return}
+ if(initial){p.group.position.copy(to);p.group.rotation.y=role==='sofa'?Math.PI:role==='coffee'?Math.PI*.86:Math.PI;p.route=[];p.walking=false;p.state=stateForRole(role);poseForRole(p,role);return}
  // The previous activity finishes; walk back to the assigned desk or next break.
  p.route=pathBetween(from,to,oldRole,role,p.index);
- p.walking=true;poseForRole(p,role,true);
+ p.walking=true;p.state=role==='desk'?'RETURNING':'WALKING';poseForRole(p,role,true);
  p.inspectAt=0;
 }
 function walkStaff(p,dt,t){
  if(!p.route.length){
-  if(p.walking){p.walking=false;poseForRole(p,p.role);p.group.position.copy(targetForRole(p,p.role));p.group.rotation.y=p.role==='coffee'?Math.PI*.86:Math.PI;}
+  if(p.walking){p.walking=false;p.state=stateForRole(p.role);poseForRole(p,p.role);p.group.position.copy(targetForRole(p,p.role));p.group.rotation.y=p.role==='coffee'?Math.PI*.86:Math.PI;}else if(p.role==='supervisor')p.state='SUPERVISING';
   return;
  }
  const target=p.route[0],dx=target.x-p.group.position.x,dz=target.z-p.group.position.z,dist=Math.hypot(dx,dz),step=p.walkSpeed*dt;
@@ -459,21 +460,50 @@ function patrolSupervisor(p,t){
   p.route=[point(gap,from.z),point(gap,z),point(x,z)];
  }else p.route=[point(x,z)];
  p.route=p.route.filter(q=>q.distanceTo(from)>.14);
+ p.state=p.route.length?'PATROLLING':'SUPERVISING';
  p.inspectAt=t+9;
 }
+
 function updateShift(t){
- const shift=Math.floor(t/65);
- if(shift===lastShift)return;
- const initial=lastShift<0;
- lastShift=shift;
- const sofa=shift%12,coffee=(shift+4)%12,supervisor=(shift+8)%12;
- teamRoles.sofa=sofa;teamRoles.coffee=coffee;teamRoles.supervisor=supervisor;
- for(const p of team){
-  const role=p.index===sofa?'sofa':p.index===coffee?'coffee':p.index===supervisor?'supervisor':'desk';
-  if(initial)teamPosition(p,role,true);
-  else if(p.role!==role)teamPosition(p,role,false);
+ const shift=Math.floor(t/80);
+ if(shift!==lastShift){
+  const initial=lastShift<0;
+  lastShift=shift;
+  const picks={sofa:shift%12,coffee:(shift+4)%12,supervisor:(shift+8)%12};
+  if(initial){
+   for(const p of team){
+    const role=p.index===picks.sofa?'sofa':p.index===picks.coffee?'coffee':p.index===picks.supervisor?'supervisor':'desk';
+    teamPosition(p,role,true);
+   }
+   Object.assign(teamRoles,picks);
+  }else{
+   // End the previous coffee/sofa/supervision activities first.
+   // New visitors only enter the reserved break areas after they are vacant.
+   for(const p of team)if(p.role!=='desk')teamPosition(p,'desk');
+   shiftPlan={...picks};
+  }
  }
- if(premiumActive)$('avatarStatus').textContent='🚶 Supervisor visitando mesas · ☕ '+names[coffee]+' no café · 🛋️ '+names[sofa]+' descansando · rodízio a cada 65 s';
+ if(!shiftPlan)return;
+ for(const role of ['sofa','coffee','supervisor']){
+  const id=shiftPlan[role];
+  if(id===null||id===undefined)continue;
+  const next=team[id];
+  if(next.walking||next.route.length||next.role!=='desk')continue;
+  const dest=targetForRole(next,role);
+  // Capacity: only one person on the sofa and one at the coffee counter.
+  // The previous user has to vacate before the next approaches.
+  const radius=role==='supervisor'?0.65:1.45;
+  const occupied=team.some(p=>p!==next&&Math.hypot(p.group.position.x-dest.x,p.group.position.z-dest.z)<radius);
+  if(occupied)continue;
+  teamPosition(next,role);
+  teamRoles[role]=id;
+  shiftPlan[role]=null;
+ }
+ if(Object.values(shiftPlan).every(v=>v===null))shiftPlan=null;
+ if(premiumActive){
+  const label=role=>teamRoles[role]>=0?names[teamRoles[role]]:'aguardando';
+  $('avatarStatus').textContent='🚶 Supervisor '+label('supervisor')+' · ☕ '+label('coffee')+' · 🛋️ '+label('sofa')+' · rodízio gradual (80 s)';
+ }
 }
 let lastTeamFrame=0;
 function updateTeam(t){
