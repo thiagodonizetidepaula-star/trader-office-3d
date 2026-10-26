@@ -2,8 +2,8 @@
 <style>*{box-sizing:border-box}body{margin:0;background:#0b1420;color:#e5f4f5;font:14px system-ui,sans-serif}header{padding:12px 16px;background:#152536;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}h1{font-size:18px;margin:0}small,.hint{color:#a6bfc6}button{border:1px solid #476270;background:#233d4b;color:#eefbfb;padding:10px 13px;border-radius:9px;cursor:pointer}button.primary{background:#19795f;border-color:#2ebc90}button:disabled{opacity:.5}main{max-width:1300px;margin:auto;padding:12px}.controls{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:10px}.stage{height:min(66vh,720px);min-height:390px;border:1px solid #405e70;position:relative;overflow:hidden;border-radius:15px;background:linear-gradient(#1b3344,#475f70)}#scene{width:100%;height:100%;display:block;touch-action:none}.board{position:absolute;top:10px;left:10px;background:#071b27e8;border:1px solid #60d4a6;border-radius:10px;padding:10px 12px;max-width:min(330px,75%);pointer-events:none}.board strong{display:block;color:#75f1b9;font-size:12px}.board span{display:block;font-size:13px}.info{position:absolute;right:10px;bottom:10px;background:#071b27db;border-radius:8px;padding:8px 10px;pointer-events:none;font-size:12px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0}.stat,.panel{background:#182d3d;border:1px solid #345364;padding:13px;border-radius:11px}.stat b{display:block;font-size:23px}.stat span{font-size:12px;color:#a6bfc6}.win{color:#5bdfaa}.loss{color:#ff8f93}.panel{margin:12px 0}section{overflow:auto}table{width:100%;border-collapse:collapse;min-width:520px}td,th{text-align:left;border-bottom:1px solid #304859;padding:9px}th{color:#b3cbd4}.hint{font-size:12px}#fallback{display:none;position:absolute;inset:30% 8%;text-align:center} @media(max-width:620px){.stage{height:62vh;min-height:440px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.board{padding:8px}.board span{font-size:12px}}</style>
 <script type="importmap">{"imports":{"three":"https://esm.sh/three@0.170.0","three/addons/":"https://esm.sh/three@0.170.0/examples/jsm/"}}</script></head>
 <body><header><h1>🐯 XTREME TIGER <small>· Trader Office 3D</small></h1><b class="win">● DEMONSTRAÇÃO</b></header><main>
-<div class="controls"><button id="start" class="primary">▶ Iniciar demo</button><button id="pause">⏸ Pausar</button><button id="reset">↺ Zerar</button><button id="camera">🎥 Recentrar câmera</button><button id="avatarTest" class="primary">↩ Ver equipe original</button><small id="avatarStatus" aria-live="polite">🐯 Equipe Tiger · 6 homens e 6 mulheres · rodízio automático</small><small>Arraste para girar · pinça para zoom · toque em um trader</small></div>
-<div class="stage"><canvas id="scene"></canvas><div id="fallback">Não foi possível carregar o motor 3D. Verifique a conexão com a internet.</div><div class="board"><strong>🐯 XTREME TIGER · LOUSA DIGITAL</strong><span id="headline">Equipe analisando o mercado fictício…</span></div><div class="info">🏢 Sala A · Sala B · Recepção · 12 computadores</div></div>
+<div class="controls"><button id="start" class="primary">▶ Iniciar demo</button><button id="pause">⏸ Pausar</button><button id="reset">↺ Zerar</button><button id="camera">🎥 Recentrar câmera</button><button id="avatarTest" class="primary">↩ Ver equipe original</button><small id="avatarStatus" aria-live="polite">🐯 Equipe Tiger · 6 homens e 6 mulheres · rodízio automático</small><small>Arraste para girar · pinça para zoom · corredor central com salas dos dois lados</small></div>
+<div class="stage"><canvas id="scene"></canvas><div id="fallback">Não foi possível carregar o motor 3D. Verifique a conexão com a internet.</div><div class="board"><strong>🐯 XTREME TIGER · LOUSA DIGITAL</strong><span id="headline">Equipe analisando o mercado fictício…</span></div><div class="info">🏙️ 2 salas de luxo · Corredor central · Vista panorâmica</div></div>
 <div class="stats"><div class="stat"><span>Operações fictícias</span><b id="total">0</b></div><div class="stat"><span>Vitórias</span><b class="win" id="wins">0</b></div><div class="stat"><span>Derrotas</span><b class="loss" id="losses">0</b></div><div class="stat"><span>Saldo simulado</span><b id="balance">R$ 0,00</b></div></div>
 <div class="panel" id="detail">👥 Selecione um dos 12 traders para visualizar sua estratégia.</div>
 <h3>Histórico da simulação</h3><section><table><thead><tr><th>Trader</th><th>Ativo</th><th>Estratégia</th><th>Resultado</th><th>Valor</th></tr></thead><tbody id="history"></tbody></table></section>
@@ -11,19 +11,19 @@
 <script type="module">
 import * as THREE from 'three';import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 const $=id=>document.getElementById(id), canvas=$('scene'),scene=new THREE.Scene();scene.background=new THREE.Color('#314858');scene.fog=new THREE.Fog('#314858',24,48);
-const camera=new THREE.PerspectiveCamera(48,1,.1,100);camera.position.set(12,15,23);
+const camera=new THREE.PerspectiveCamera(48,1,.1,100);camera.position.set(0,12.6,22);
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;
 const controls=new OrbitControls(camera,renderer.domElement);controls.target.set(0,1.1,1.4);controls.enableDamping=true;controls.maxPolarAngle=Math.PI/2.05;controls.minDistance=7;controls.maxDistance=34;controls.enablePan=false;controls.update();
-scene.add(new THREE.HemisphereLight(0xc8efff,0x526474,2.3));const sun=new THREE.DirectionalLight(0xffefdc,2.8);sun.position.set(6,14,8);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-14;sun.shadow.camera.right=14;sun.shadow.camera.top=14;sun.shadow.camera.bottom=-14;scene.add(sun);
+scene.add(new THREE.HemisphereLight(0xc8efff,0x526474,2.3));const sun=new THREE.DirectionalLight(0xffefdc,2.8);sun.position.set(13,13,-1);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-20;sun.shadow.camera.right=20;sun.shadow.camera.top=18;sun.shadow.camera.bottom=-18;scene.add(sun);
 const mat=(color,metalness=0)=>new THREE.MeshStandardMaterial({color,metalness,roughness:.65});const wood=mat('#927052'),steel=mat('#3d5567',.4),screen=mat('#0f2635',.1),green=mat('#3ce6ac'),wall=mat('#617d88'),tile=mat('#85969a'),chair=mat('#243b4b');
 function box(w,h,d,m,x,y,z,parent=scene){const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);mesh.position.set(x,y,z);mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);return mesh}
 function ball(r,m,x,y,z,parent=scene){const mesh=new THREE.Mesh(new THREE.SphereGeometry(r,12,10),m);mesh.position.set(x,y,z);mesh.castShadow=true;parent.add(mesh);return mesh}
-box(16,.3,16,tile,0,-.17,1.9);box(16,5,.18,wall,0,2.35,-6);box(.18,5,16,wall,-8,2.35,1.9);
+box(16,.3,16,tile,0,-.17,1.9);box(16,5,.18,wall,0,2.35,-6);
 for(let x=-7.6;x<8;x+=1.4)for(let z=-5.8;z<9.8;z+=1.4)box(1.36,.018,1.36,mat((Math.round(x+z)%2)?'#819397':'#8d9fa2'),x,.01,z);
 const brandCanvas=document.createElement('canvas');brandCanvas.width=1024;brandCanvas.height=256;const bc=brandCanvas.getContext('2d');bc.fillStyle='#071b2d';bc.fillRect(0,0,1024,256);bc.fillStyle='#f4b453';bc.font='bold 76px system-ui';bc.textAlign='center';bc.fillText('XTREME TIGER',512,125);bc.fillStyle='#6ae7b0';bc.font='bold 28px system-ui';bc.fillText('TRADER OFFICE 3D',512,186);const bt=new THREE.CanvasTexture(brandCanvas);bt.colorSpace=THREE.SRGBColorSpace;const bm=new THREE.Mesh(new THREE.PlaneGeometry(4.4,1.1),new THREE.MeshBasicMaterial({map:bt,side:THREE.DoubleSide}));bm.position.set(0,4.1,-5.71);bm.scale.set(.9,.87,1);scene.add(bm);
 const coffee= new THREE.Group();coffee.position.set(6,0,7.1);scene.add(coffee);box(2.1,.17,1.3,wood,0,1.02,0,coffee);box(.16,1,.16,steel,-.8,.5,-.4,coffee);box(.16,1,.16,steel,.8,.5,.4,coffee);box(.8,.9,.55,screen,-.45,1.53,0,coffee);box(.42,.28,.48,mat('#ced9d9'),.55,1.28,0,coffee);
 const names=['Alex','Bia','Caio','Dani','Eva','Fred','Gabi','Hugo','Lia','Leo','Maya','Rafa'],strategies=['Tendência','Bollinger','RSI','Médias móveis','Suporte','MACD','Price Action','Sniper','EMA 200','Volume','Breakout','Confluência'],colors=['#ed9478','#88adf0','#f0ce6d','#be9bf2','#f48eae','#8cddb9','#e3a46e','#78bad9','#a5ccea','#d38ea4','#77a9a3','#cea272'];
-const people=[],clickTargets=[],charts=[];const positions=[[-6.4,-3],[-4,-3],[-1.5,-3],[1.5,-3],[4,-3],[6.4,-3],[-6.4,2],[-4,2],[-1.5,2],[1.5,2],[4,2],[6.4,2]];
+const people=[],clickTargets=[],charts=[];const positions=[[-6.55,-3.5],[-4.5,-3.5],[-2.55,-3.5],[2.55,-3.5],[4.5,-3.5],[6.55,-3.5],[-6.55,.6],[-4.5,.6],[-2.55,.6],[2.55,.6],[4.5,.6],[6.55,.6]];
 positions.forEach(([x,z],i)=>{const work=new THREE.Group();work.position.set(x,0,z);scene.add(work);box(2.5,.16,1.25,wood,0,1.05,-.2,work);for(let dx of [-1.05,1.05])for(let dz of [-.65,.25])box(.1,1,.1,steel,dx,.5,dz,work);box(.92,.68,.08,screen,0,1.56,-.61,work);const cv=document.createElement('canvas');cv.width=192;cv.height=112;const ctx=cv.getContext('2d'),tex=new THREE.CanvasTexture(cv);const plane=new THREE.Mesh(new THREE.PlaneGeometry(.83,.5),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide}));plane.position.set(0,1.56,-.55);work.add(plane);charts.push({ctx,tex,seed:i,prices:Array.from({length:18},(_,k)=>50+k*.5+Math.sin(k+i)*8)});box(.42,.05,.18,steel,0,1.12,-.37,work);box(.8,.1,.15,steel,0,1.11,.25,work);
 box(.85,.12,.7,chair,0,.62,1.03,work);box(.85,.9,.14,chair,0,1.05,1.36,work);box(.15,.6,.15,steel,0,.3,1,work);
 const person=new THREE.Group();person.position.set(x,0,z+1);person.rotation.y=Math.PI;scene.add(person);const shirt=mat(colors[i]),skin=mat(['#dfb48b','#a87c5d','#f0caa8','#9e674a'][i%4]),hair=mat(['#25222a','#603b27','#d8b065','#33232a'][i%4]);const head=new THREE.Group();head.position.y=1.49;person.add(head);ball(.24,skin,0,0,0,head);ball(.23,hair,0,.13,-.05,head);for(const side of [-1,1]){ball(.033,mat('#172735'),side*.085,.025,.216,head);ball(.013,mat('#ffffff'),side*.08,.03,.239,head)}box(.11,.018,.012,mat('#874653'),0,-.103,.23,head);box(.52,.61,.32,shirt,0,1.02,0,person);const arms=[];for(const side of [-1,1]){const joint=new THREE.Group();joint.position.set(side*.35,1.22,.18);person.add(joint);box(.18,.44,.18,shirt,0,-.25,.08,joint);ball(.075,skin,0,-.48,.20,joint);joint.rotation.x=-1.2;joint.rotation.z=side*.09;arms.push(joint)}const legs=[];for(const side of [-1,1])legs.push(box(.22,.49,.22,chair,side*.15,.52,0,person));// Distinct stylized game avatars: haircuts, eyes, brows, jackets and footwear.
@@ -45,14 +45,100 @@ if(i%3===1){const skirt=new THREE.Mesh(new THREE.CylinderGeometry(.29,.36,.3,10)
 box(.13,.19,.02,white,.19,1.08,.187,person);
 person.traverse(obj=>{if(obj.isMesh){obj.userData.index=i;clickTargets.push(obj)}});people.push({group:person,head,arms,legs,x,z,phase:i*.7,walk:false,celebrate:0,win:true,blink:i*.48,smile});});
 function updateCharts(){charts.forEach(ch=>{if(ch.big)return;let p=ch.prices;p.push(Math.max(15,Math.min(95,p[p.length-1]+(Math.random()-.5)*12)));p.shift();const c=ch.ctx;c.fillStyle='#081a27';c.fillRect(0,0,192,112);c.strokeStyle='#2b4654';for(let y=12;y<112;y+=22){c.beginPath();c.moveTo(0,y);c.lineTo(192,y);c.stroke()}for(let k=1;k<p.length;k++){const x=k*10,up=p[k]>=p[k-1],a=104-p[k],b=104-p[k-1];c.strokeStyle=up?'#42e3aa':'#f16d85';c.fillStyle=c.strokeStyle;c.beginPath();c.moveTo(x,Math.min(a,b)-5);c.lineTo(x,Math.max(a,b)+5);c.stroke();c.fillRect(x-3,Math.min(a,b),6,Math.max(2,Math.abs(a-b)))}c.fillStyle='#bfe3ec';c.font='10px monospace';c.fillText(['EUR/USD','GBP/USD','USD/JPY','AUD/USD'][ch.seed%4]+' M1',5,10);ch.tex.needsUpdate=true})}updateCharts();setInterval(updateCharts,1300);
-// Two premium commercial rooms separated by glass, each with its own entrance.
-const glass=new THREE.MeshPhysicalMaterial({color:0xbce7f1,transparent:true,opacity:.19,roughness:.06,metalness:.12,depthWrite:false,side:THREE.DoubleSide}),trim=mat('#263d4b',.4);
+// Luxury high-rise suite: central corridor, distinct left/right offices and sunlit exterior windows.
+const glass=new THREE.MeshPhysicalMaterial({color:0xc8f3ff,transparent:true,opacity:.13,roughness:.06,metalness:.08,depthWrite:false,side:THREE.DoubleSide}),trim=mat('#263d4b',.4);
+const brass=mat('#b89656',.67),marble=mat('#d5d8d5',.09),walnut=mat('#5d4338'),navy=mat('#273c55'),cream=mat('#e9e2d4'),stone=mat('#a9a9a3');
 function glassWall(x,y,z,w,h,d){box(w,h,d,glass,x,y,z);box(w,.075,d+.065,trim,x,y+h/2,z);box(w,.075,d+.065,trim,x,y-h/2,z)}
-glassWall(0,2.1,-3.1,.065,4.1,5.4);glassWall(0,2.1,2.1,.065,4.1,3.0);
-for(const side of [-1,1]){const center=side*4;glassWall(center-side*1.82,2.1,4.7,3.6,4.0,.05);glassWall(center+side*2.22,2.1,4.7,2.2,4.0,.05);glassWall(center+side*.52,3.55,4.7,1.52,1.1,.05);
-box(1.4,2.6,.045,glass,center+side*.52,1.32,4.7);box(.065,2.65,.1,trim,center+side*.52-side*.7,1.33,4.7);box(.065,2.65,.1,trim,center+side*.52+side*.7,1.33,4.7);box(.05,.13,.11,mat('#dbb477'),center+side*.52+side*.47,1.4,4.78)}
-for(const x of [-6.4,-3.5,-.7,.7,3.5,6.4]){box(.4,.1,.4,mat('#ead8b6'),x,4.5,-.3);const light=new THREE.PointLight(0xffe4c6,.6,4.2);light.position.set(x,4.25,-.3);scene.add(light)}
-const labelRoom=(label,x)=>{const cv=document.createElement('canvas');cv.width=512;cv.height=128;const g=cv.getContext('2d');g.fillStyle='#132b39';g.fillRect(0,0,512,128);g.fillStyle='#e9f5f4';g.font='bold 36px sans-serif';g.textAlign='center';g.fillText(label,256,76);const tx=new THREE.CanvasTexture(cv);const sign=new THREE.Mesh(new THREE.PlaneGeometry(2.25,.56),new THREE.MeshBasicMaterial({map:tx,side:THREE.DoubleSide}));sign.position.set(x,3.8,4.79);scene.add(sign)};labelRoom('XTREME - SALA A',-4);labelRoom('XTREME - SALA B',4);
+// A 2.3m central passage running from the entrance/reception to the back wall.
+box(2.22,.032,15.5,walnut,0,.03,1.8);
+for(let z=-5.2;z<9.2;z+=1.2){box(2.18,.012,.026,brass,0,.054,z);}
+for(const side of [-1,1]){
+ const xx=side*1.17;
+ // Each room is enclosed by a glazed partition with its own wide doorway.
+ glassWall(xx,2.35,-3.05,.055,4.4,5.9);
+ glassWall(xx,2.35,3.65,.055,4.4,2.1);
+ box(.11,4.7,.11,brass,xx,2.35,-.12);
+ box(.11,4.7,.11,brass,xx,2.35,2.6);
+ box(.12,.16,.13,brass,xx-side*.13,1.33,1.8);
+ // Open doorway from the central corridor into each room, with visible door leaf.
+ const door=new THREE.Group();door.position.set(xx,0,2.57);scene.add(door);
+ const leaf=new THREE.Mesh(new THREE.BoxGeometry(.045,2.45,1.15),glass);
+ leaf.position.set(side*.50,1.28,-.47);leaf.rotation.y=side*.55;door.add(leaf);
+ box(.065,2.5,.065,brass,xx,1.25,2.55);
+ // Distinct luxury finishes: warm walnut lounge on left, marble/navy office on right.
+ const center=side*4.55;
+ box(6.7,.035,10.45,side<0?walnut:marble,center,.042,-.45);
+ for(let z=-5;z<4.3;z+=2.4){
+  box(6.45,.008,.022,side<0?brass:stone,center,.066,z);
+ }
+ box(5.1,.018,2.05,side<0?mat('#73534c'):navy,center,.073,-.85);
+ for(const zz of [-5.45,4.3]){
+  box(6.4,.14,.10,brass,center,4.46,zz);
+ }
+ // Modern pendant lights with warm glow, positioned above each office.
+ for(const zz of [-2.5,1.8]){
+  box(.025,.8,.025,brass,center,4.30,zz);
+  box(1.8,.085,.40,side<0?brass:cream,center,3.87,zz);
+  const lamp=new THREE.PointLight(side<0?0xffd6a2:0xe7efff,.45,5.5);
+  lamp.position.set(center,3.7,zz);scene.add(lamp);
+ }
+ // Small executive shelving and art on rear wall, away from the trading TVs.
+ box(.72,1.15,.24,side<0?walnut:navy,side*7.30,1.30,-5.38);
+ box(.7,.07,.28,brass,side*7.30,1.76,-5.16);
+ box(.7,.07,.28,brass,side*7.30,1.19,-5.16);
+}
+// Front partitions separate the office rooms from the shared reception.
+for(const side of [-1,1]){
+ const center=side*4.6;
+ glassWall(center,2.2,4.72,6.65,4.2,.055);
+ for(const x of [center-2.2,center,center+2.2])box(.07,4.25,.11,brass,x,2.15,4.72);
+}
+// Panoramic side windows on both exterior facades, divided into floor-to-ceiling panels.
+for(const side of [-1,1]){
+ const x=side*7.97;
+ for(let z=-4.5;z<=3.8;z+=2.25){
+  glassWall(x,2.28,z,.07,4.05,2.19);
+  box(.11,4.55,.14,brass,x,2.32,z-1.12);
+  box(.15,.08,2.22,brass,x,2.78,z);
+  box(.28,.24,2.22,stone,x,.22,z);
+ }
+ box(.12,4.5,.15,brass,x,2.3,4.92);
+}
+// Exterior skyline beyond the windows: original procedural city buildings.
+const skylineMat=['#728d9f','#94a9b3','#627d90','#849aa5','#a2b4bd','#647f8b'];
+for(const side of [-1,1]){
+ for(let k=0;k<15;k++){
+  const z=-7+k*1.3,far=side*(10.1+(k%3)*1.4),h=2.2+((k*7)%8)*.58;
+  const tower=box(1.25+(k%3)*.35,h,1.12,mat(skylineMat[k%6]),far,h/2-.6,z);
+  tower.castShadow=false;
+  const face=far-side*(.66+(k%3)*.17);
+  for(let yy=.35;yy<h-1.1;yy+=.47){
+   const win=box(.024,.15,.22,mat(k%3===0?'#f3d6a0':'#b8dbe2'),face,yy,z-.30);
+   win.castShadow=false;
+  }
+ }
+}
+// Sunlight entering from the right panoramic windows, with translucent light pools.
+const sunPatch=new THREE.MeshBasicMaterial({color:0xffe3a4,transparent:true,opacity:.15,depthWrite:false,side:THREE.DoubleSide});
+for(let k=0;k<5;k++){
+ const patch=new THREE.Mesh(new THREE.PlaneGeometry(1.15,2.15),sunPatch);
+ patch.rotation.x=-Math.PI/2;patch.rotation.z=-.45;patch.position.set(5.7-k*.68,.081,-4.25+k*1.65);scene.add(patch);
+}
+const daylight=new THREE.DirectionalLight(0xffdfaa,1.25);daylight.position.set(13,9,1);scene.add(daylight);
+// Hallway accents, room numbers, elevator-like entry and floor runner.
+box(2.16,.03,2.0,navy,0,.068,7.8);
+for(const side of [-1,1]){box(.13,4.5,.14,brass,side*1.17,2.25,4.72);box(.30,.15,.14,brass,side*1.18,2.8,2.65);}
+for(const z of [-3.8,0,4.0,7.6]){box(.58,.075,.48,cream,0,4.61,z);const light=new THREE.PointLight(0xffe6c0,.4,3.2);light.position.set(0,4.4,z);scene.add(light)}
+const labelRoom=(label,x)=>{
+ const cv=document.createElement('canvas');cv.width=512;cv.height=128;
+ const g=cv.getContext('2d');g.fillStyle='#13283a';g.fillRect(0,0,512,128);
+ g.strokeStyle='#e6bd72';g.lineWidth=9;g.strokeRect(6,6,500,116);
+ g.fillStyle='#f3e6c9';g.font='bold 32px sans-serif';g.textAlign='center';g.fillText(label,256,77);
+ const tx=new THREE.CanvasTexture(cv);tx.colorSpace=THREE.SRGBColorSpace;
+ const sign=new THREE.Mesh(new THREE.PlaneGeometry(2.45,.62),new THREE.MeshBasicMaterial({map:tx,side:THREE.DoubleSide}));
+ sign.position.set(x,3.65,4.80);scene.add(sign);
+};
+labelRoom('XTREME · SALA EXECUTIVA',-4.55);labelRoom('XTREME · SALA TRADING',4.55);
 
 function drawBigChart(c){
   const g=c.ctx,w=c.cv.width,h=c.cv.height,p=c.prices,top=60,bottom=h-68,left=48,right=w-74;
@@ -105,7 +191,7 @@ people.forEach((p,i)=>{if(i===0||i===3||i===6){for(const side of [-1,1]){const l
 const ray=new THREE.Raycaster(),pointer=new THREE.Vector2();let down=null,selected=-1;canvas.addEventListener('pointerdown',e=>down=[e.clientX,e.clientY]);canvas.addEventListener('pointerup',e=>{if(!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>10)return;const r=canvas.getBoundingClientRect();pointer.set(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);ray.setFromCamera(pointer,camera);const hit=ray.intersectObjects(clickTargets)[0];if(hit){selected=hit.object.userData.index;showDetail()}});function showDetail(){$('detail').textContent='👤 '+names[selected]+' · Estratégia: '+strategies[selected]+' · Digitando, olhando para o computador'+' (simulação)'}
 let total=0,wins=0,losses=0,balance=0,timer=null;const money=n=>n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 function tick(){const i=Math.floor(Math.random()*people.length),win=Math.random()>.5,asset=['EUR/USD','GBP/USD','USD/JPY','AUD/USD'][Math.floor(Math.random()*4)],v=win?8:-10;total++;wins+=win?1:0;losses+=win?0:1;balance+=v;selected=i;$('total').textContent=total;$('wins').textContent=wins;$('losses').textContent=losses;$('balance').textContent=money(balance);$('headline').textContent=names[i]+' · '+asset+' · '+strategies[i]+' · '+(win?'WIN ✅':'LOSS ❌');$('history').insertAdjacentHTML('afterbegin','<tr><td>'+names[i]+'</td><td>'+asset+'</td><td>'+strategies[i]+'</td><td class="'+(win?'win':'loss')+'">'+(win?'WIN':'LOSS')+'</td><td>'+money(v)+'</td></tr>');people[i].phase+=3;people[i].celebrate=clock.getElapsedTime()+2.5;people[i].win=win;signals[i].material.color.set(win?0xffffff:0xff5b75);showDetail()}
-$('start').onclick=()=>{if(timer===null)timer=setInterval(tick,4000)};$('pause').onclick=()=>{clearInterval(timer);timer=null};$('reset').onclick=()=>{$('pause').click();total=wins=losses=balance=0;$('total').textContent=$('wins').textContent=$('losses').textContent='0';$('balance').textContent=money(0);$('headline').textContent='Equipe analisando o mercado fictício…';$('history').innerHTML=''};$('camera').onclick=()=>{camera.position.set(12,15,23);controls.target.set(0,1.1,1.4);controls.update()};
+$('start').onclick=()=>{if(timer===null)timer=setInterval(tick,4000)};$('pause').onclick=()=>{clearInterval(timer);timer=null};$('reset').onclick=()=>{$('pause').click();total=wins=losses=balance=0;$('total').textContent=$('wins').textContent=$('losses').textContent='0';$('balance').textContent=money(0);$('headline').textContent='Equipe analisando o mercado fictício…';$('history').innerHTML=''};$('camera').onclick=()=>{camera.position.set(0,12.6,22);controls.target.set(0,1.1,1.4);controls.update()};
 function resize(){const r=canvas.getBoundingClientRect();if(r.width&&r.height){camera.aspect=r.width/r.height;camera.updateProjectionMatrix();renderer.setSize(r.width,r.height,false)}}new ResizeObserver(resize).observe(canvas);resize();
 // Xtreme Tiger team: twelve distinct original stylized executives (six women, six men).
 // Procedural 3D only, no unverified external character files or dependencies.
