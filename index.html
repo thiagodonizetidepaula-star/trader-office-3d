@@ -2,14 +2,14 @@
 <style>*{box-sizing:border-box}body{margin:0;background:#0b1420;color:#e5f4f5;font:14px system-ui,sans-serif}header{padding:12px 16px;background:#152536;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}h1{font-size:18px;margin:0}small,.hint{color:#a6bfc6}button{border:1px solid #476270;background:#233d4b;color:#eefbfb;padding:10px 13px;border-radius:9px;cursor:pointer}button.primary{background:#19795f;border-color:#2ebc90}button:disabled{opacity:.5}main{max-width:1300px;margin:auto;padding:12px}.controls{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:10px}.stage{height:min(66vh,720px);min-height:390px;border:1px solid #405e70;position:relative;overflow:hidden;border-radius:15px;background:linear-gradient(#1b3344,#475f70)}#scene{width:100%;height:100%;display:block;touch-action:none}.board{position:absolute;top:10px;left:10px;background:#071b27e8;border:1px solid #60d4a6;border-radius:10px;padding:10px 12px;max-width:min(330px,75%);pointer-events:none}.board strong{display:block;color:#75f1b9;font-size:12px}.board span{display:block;font-size:13px}.info{position:absolute;right:10px;bottom:10px;background:#071b27db;border-radius:8px;padding:8px 10px;pointer-events:none;font-size:12px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0}.stat,.panel{background:#182d3d;border:1px solid #345364;padding:13px;border-radius:11px}.stat b{display:block;font-size:23px}.stat span{font-size:12px;color:#a6bfc6}.win{color:#5bdfaa}.loss{color:#ff8f93}.panel{margin:12px 0}section{overflow:auto}table{width:100%;border-collapse:collapse;min-width:520px}td,th{text-align:left;border-bottom:1px solid #304859;padding:9px}th{color:#b3cbd4}.hint{font-size:12px}#fallback{display:none;position:absolute;inset:30% 8%;text-align:center} @media(max-width:620px){.stage{height:62vh;min-height:440px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.board{padding:8px}.board span{font-size:12px}}</style>
 <script type="importmap">{"imports":{"three":"https://esm.sh/three@0.170.0","three/addons/":"https://esm.sh/three@0.170.0/examples/jsm/"}}</script></head>
 <body><header><h1>🐯 XTREME TIGER <small>· Trader Office 3D</small></h1><b class="win">● DEMONSTRAÇÃO</b></header><main>
-<div class="controls"><button id="start" class="primary">▶ Iniciar demo</button><button id="pause">⏸ Pausar</button><button id="reset">↺ Zerar</button><button id="camera">🎥 Recentrar câmera</button><small>Arraste para girar · pinça para zoom · toque em um trader</small></div>
+<div class="controls"><button id="start" class="primary">▶ Iniciar demo</button><button id="pause">⏸ Pausar</button><button id="reset">↺ Zerar</button><button id="camera">🎥 Recentrar câmera</button><button id="avatarTest" class="primary">🧍 Testar avatar premium</button><small id="avatarStatus" aria-live="polite">Modelo CC0 · 1 personagem</small><small>Arraste para girar · pinça para zoom · toque em um trader</small></div>
 <div class="stage"><canvas id="scene"></canvas><div id="fallback">Não foi possível carregar o motor 3D. Verifique a conexão com a internet.</div><div class="board"><strong>🐯 XTREME TIGER · LOUSA DIGITAL</strong><span id="headline">Equipe analisando o mercado fictício…</span></div><div class="info">🏢 Sala A · Sala B · Recepção · 12 computadores</div></div>
 <div class="stats"><div class="stat"><span>Operações fictícias</span><b id="total">0</b></div><div class="stat"><span>Vitórias</span><b class="win" id="wins">0</b></div><div class="stat"><span>Derrotas</span><b class="loss" id="losses">0</b></div><div class="stat"><span>Saldo simulado</span><b id="balance">R$ 0,00</b></div></div>
 <div class="panel" id="detail">👥 Selecione um dos 12 traders para visualizar sua estratégia.</div>
 <h3>Histórico da simulação</h3><section><table><thead><tr><th>Trader</th><th>Ativo</th><th>Estratégia</th><th>Resultado</th><th>Valor</th></tr></thead><tbody id="history"></tbody></table></section>
-<p class="hint">Esta versão usa geometria 3D original, produzida por código. Os pacotes gratuitos de móveis Kenney/reodesuxz e animações Mixamo ainda não foram incorporados. As operações são aleatórias e fictícias, sem conexão com a Bullex. Personagens estilizados fazem movimentos simples, não são modelos do The Sims.</p></main>
+<p class="hint">Esta versão usa geometria 3D original, produzida por código. O botão de teste carrega um único avatar 3D externo licenciado CC0 (Grab3D, com reserva Quaternius). A pose de escritório é experimental; os outros 11 traders continuam com geometria original. Os pacotes gratuitos de móveis Kenney/reodesuxz e animações Mixamo ainda não foram incorporados. As operações são aleatórias e fictícias, sem conexão com a Bullex. Personagens estilizados fazem movimentos simples, não são modelos do The Sims.</p></main>
 <script type="module">
-import * as THREE from 'three';import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import * as THREE from 'three';import {OrbitControls} from 'three/addons/controls/OrbitControls.js';import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 const $=id=>document.getElementById(id), canvas=$('scene'),scene=new THREE.Scene();scene.background=new THREE.Color('#314858');scene.fog=new THREE.Fog('#314858',24,48);
 const camera=new THREE.PerspectiveCamera(48,1,.1,100);camera.position.set(12,15,23);
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;
@@ -107,5 +107,51 @@ let total=0,wins=0,losses=0,balance=0,timer=null;const money=n=>n.toLocaleString
 function tick(){const i=Math.floor(Math.random()*people.length),win=Math.random()>.5,asset=['EUR/USD','GBP/USD','USD/JPY','AUD/USD'][Math.floor(Math.random()*4)],v=win?8:-10;total++;wins+=win?1:0;losses+=win?0:1;balance+=v;selected=i;$('total').textContent=total;$('wins').textContent=wins;$('losses').textContent=losses;$('balance').textContent=money(balance);$('headline').textContent=names[i]+' · '+asset+' · '+strategies[i]+' · '+(win?'WIN ✅':'LOSS ❌');$('history').insertAdjacentHTML('afterbegin','<tr><td>'+names[i]+'</td><td>'+asset+'</td><td>'+strategies[i]+'</td><td class="'+(win?'win':'loss')+'">'+(win?'WIN':'LOSS')+'</td><td>'+money(v)+'</td></tr>');people[i].phase+=3;people[i].celebrate=clock.getElapsedTime()+2.5;people[i].win=win;signals[i].material.color.set(win?0xffffff:0xff5b75);showDetail()}
 $('start').onclick=()=>{if(timer===null)timer=setInterval(tick,4000)};$('pause').onclick=()=>{clearInterval(timer);timer=null};$('reset').onclick=()=>{$('pause').click();total=wins=losses=balance=0;$('total').textContent=$('wins').textContent=$('losses').textContent='0';$('balance').textContent=money(0);$('headline').textContent='Equipe analisando o mercado fictício…';$('history').innerHTML=''};$('camera').onclick=()=>{camera.position.set(12,15,23);controls.target.set(0,1.1,1.4);controls.update()};
 function resize(){const r=canvas.getBoundingClientRect();if(r.width&&r.height){camera.aspect=r.width/r.height;camera.updateProjectionMatrix();renderer.setSize(r.width,r.height,false)}}new ResizeObserver(resize).observe(canvas);resize();
-const clock=new THREE.Clock();function frame(){requestAnimationFrame(frame);const t=clock.getElapsedTime();people.forEach((p,i)=>{const cycle=(t*.22+i*1.41)%(Math.PI*2);const going=false;p.walk=false;p.group.position.set(p.x,0,p.z+1);p.group.rotation.y=Math.PI;p.head.rotation.z=Math.sin(t*2+i)*.06;p.head.rotation.x=.12+Math.sin(t*.9+i)*.025;p.head.scale.y=(Math.sin(t*1.6+i*1.8)>.995?.94:1);p.smile.scale.x=t<p.celebrate?(p.win?1.4:.55):1;signals[i].material.opacity=Math.max(0,Math.min(1,(p.celebrate-t)*1.5));signals[i].position.y=2.38+(signals[i].material.opacity?Math.sin(t*5)*.055:0);p.arms.forEach((arm,k)=>{arm.rotation.z=(k===0?-.09:.09)+(t<p.celebrate?Math.sin(t*4+i)*.08:Math.sin(t*8+i+k*Math.PI)*.045);arm.rotation.x=-1.2+Math.sin(t*9+i+k*Math.PI)*.065});p.legs.forEach((leg,k)=>{leg.rotation.x=going?Math.sin(t*8+i+k*Math.PI)*.3:0})});controls.update();renderer.render(scene,camera)}frame();
+// Preview opt-in: a single CC0 office avatar, original team remains untouched.
+let premiumAvatar=null,premiumMixer=null,premiumBones=[],premiumActive=false,premiumBusy=false;
+const avatarIndex=2,avatarUrls=[
+'https://grab3d.com/dl/businessman-rigged/businessman-rigged.glb',
+'https://raw.githubusercontent.com/programasweights/avatar/main/public/assets/character.glb'
+];
+function avatarMessage(msg){$('avatarStatus').textContent=msg}
+function loadAvatar(url){return new Promise((resolve,reject)=>new GLTFLoader().load(url,resolve,undefined,reject))}
+$('avatarTest').onclick=async()=>{
+ if(premiumBusy)return;
+ if(premiumAvatar){
+  premiumActive=!premiumActive;premiumAvatar.visible=premiumActive;people[avatarIndex].group.visible=!premiumActive;
+  $('avatarTest').textContent=premiumActive?'↩ Voltar aos bonecos originais':'🧍 Testar avatar premium';
+  avatarMessage(premiumActive?'Avatar 3D de teste ativado':'Personagens originais restaurados');
+  return;
+ }
+ premiumBusy=true;$('avatarTest').disabled=true;avatarMessage('Carregando modelo 3D…');
+ try{
+  let loaded=null,used=0;
+  for(let j=0;j<avatarUrls.length;j++){try{loaded=await loadAvatar(avatarUrls[j]);used=j;break}catch(err){console.warn('Avatar GLB indisponível',avatarUrls[j],err)}}
+  if(!loaded)throw Error('Falha no download do GLB');
+  const root=loaded.scene;
+  const bounds=new THREE.Box3().setFromObject(root),size=bounds.getSize(new THREE.Vector3()),center=bounds.getCenter(new THREE.Vector3());
+  if(!Number.isFinite(size.y)||size.y<.01)throw Error('Dimensões inválidas');
+  const ratio=1.8/size.y;root.scale.setScalar(ratio);
+  // Model is seated at the same desk as Caio, facing his monitor.
+  const pivot=new THREE.Group();pivot.position.set(positions[avatarIndex][0],0,positions[avatarIndex][1]+1);
+  root.position.set(-center.x*ratio,-bounds.min.y*ratio,-center.z*ratio);
+  pivot.rotation.y=Math.PI;pivot.add(root);scene.add(pivot);
+  premiumAvatar=pivot;premiumAvatar.visible=true;premiumActive=true;
+  premiumBones=[];
+  root.traverse(o=>{if(o.isBone)premiumBones.push({bone:o,base:o.rotation.clone(),name:o.name.toLowerCase()});if(o.isMesh){o.castShadow=true;o.receiveShadow=true;o.userData.index=avatarIndex;clickTargets.push(o)}});
+  // Keep the original rig and use a small desk posture; no walking/running clip.
+  for(const b of premiumBones){
+   if(/(upperleg|upper_leg|thigh)/.test(b.name))b.bone.rotation.x+=.95;
+   if(/(lowerleg|lower_leg|shin|calf)/.test(b.name))b.bone.rotation.x-=1.35;
+   if(/(upperarm|upper_arm)/.test(b.name))b.bone.rotation.x-=.75;
+   if(/(lowerarm|lower_arm|forearm)/.test(b.name))b.bone.rotation.x-=.55;
+  }
+  people[avatarIndex].group.visible=false;
+  $('avatarTest').textContent='↩ Voltar aos bonecos originais';
+  avatarMessage(used===0?'Grab3D Businessman · CC0 · teste 1/12':'Quaternius · CC0 · modelo reserva');
+  camera.position.set(2.5,5.2,4.7);controls.target.set(positions[avatarIndex][0],1.3,positions[avatarIndex][1]+.6);controls.update();
+ }catch(err){console.error(err);avatarMessage('Não foi possível carregar o GLB; equipe original preservada');}
+ finally{premiumBusy=false;$('avatarTest').disabled=false}
+};
+const clock=new THREE.Clock();function frame(){requestAnimationFrame(frame);const t=clock.getElapsedTime();if(premiumActive&&premiumAvatar){for(const b of premiumBones){if(/(lowerarm|lower_arm|forearm)/.test(b.name))b.bone.rotation.z=b.base.z+Math.sin(t*9+(b.name.includes('left')||b.name.includes('.l')?0:Math.PI))*.045;}}people.forEach((p,i)=>{const cycle=(t*.22+i*1.41)%(Math.PI*2);const going=false;p.walk=false;p.group.position.set(p.x,0,p.z+1);p.group.rotation.y=Math.PI;p.head.rotation.z=Math.sin(t*2+i)*.06;p.head.rotation.x=.12+Math.sin(t*.9+i)*.025;p.head.scale.y=(Math.sin(t*1.6+i*1.8)>.995?.94:1);p.smile.scale.x=t<p.celebrate?(p.win?1.4:.55):1;signals[i].material.opacity=Math.max(0,Math.min(1,(p.celebrate-t)*1.5));signals[i].position.y=2.38+(signals[i].material.opacity?Math.sin(t*5)*.055:0);p.arms.forEach((arm,k)=>{arm.rotation.z=(k===0?-.09:.09)+(t<p.celebrate?Math.sin(t*4+i)*.08:Math.sin(t*8+i+k*Math.PI)*.045);arm.rotation.x=-1.2+Math.sin(t*9+i+k*Math.PI)*.065});p.legs.forEach((leg,k)=>{leg.rotation.x=going?Math.sin(t*8+i+k*Math.PI)*.3:0})});controls.update();renderer.render(scene,camera)}frame();
 </script></body></html>
