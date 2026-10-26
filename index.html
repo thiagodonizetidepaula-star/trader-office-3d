@@ -511,7 +511,7 @@ function officeMoney(amount,currency='USD'){
  try{return new Intl.NumberFormat('pt-BR',{style:'currency',currency}).format(Number(amount));}catch(e){return String(amount)}
 }
 function officeDisconnect(message='Vínculo encerrado.'){
- officeBridgeToken='';officeSnapshot=null;bridgeLinked=false;
+ officeBridgeToken='';officeSnapshot=null;bridgeLinked=false;officeReceivedFirst=false;officeKnownSettled.clear();
  if(officePollTimer){clearInterval(officePollTimer);officePollTimer=null;}
  $('officePairCode').hidden=false;$('bindOffice').hidden=false;$('unbindOffice').hidden=true;
  $('realBridgePanel').hidden=true;$('localStats').hidden=false;$('simHistory').hidden=false;$('simHistoryTitle').hidden=false;
@@ -556,6 +556,14 @@ async function officeLoad(){
   let body=await response.json().catch(()=>({}));
   if(!response.ok)throw Error((body.error||'Falha na consulta')+' ('+response.status+')');
   if(body.source!=='XTREME_BULLEX_DEMO_BACKEND'||body.mode!=='PRACTICE'||body.read_only!==true)throw Error('Resposta incompatível com conta PRACTICE; leitura bloqueada.');
+  const wins=(body.trades||[]).filter(t=>t&&t.status==='WIN'&&t.id!==undefined);
+  if(!officeReceivedFirst){wins.forEach(t=>officeKnownSettled.add(String(t.id)));officeReceivedFirst=true;}
+  else for(const t of wins){
+   const id=String(t.id);if(officeKnownSettled.has(id))continue;
+   officeKnownSettled.add(id);
+   if(officeKnownSettled.size>1000)officeKnownSettled=new Set([id]);
+   celebrateWin({name:'Equipe Xtreme Tiger',v:Number(t.profit||0),currency:body.currency||'USD',source:'BULLEX_PRACTICE'});
+  }
   officeSnapshot=body;bridgeLinked=true;officeRefreshUI();
  }catch(e){
   if(/401|expirado|autorizad/i.test(e.message)){officeDisconnect('O código de leitura expirou. Gere outro no bot.');}
@@ -662,7 +670,7 @@ function celebrateWin(op){
    p.celebrateUntil=now+3.8;
   }
  }
- const toast=$('winToast');toast.textContent='🎉 WIN DEMO · '+op.name+' · '+money(op.v);toast.classList.remove('active');void toast.offsetWidth;toast.classList.add('active');
+ const toast=$('winToast');toast.textContent='🎉 WIN '+(op.source==='BULLEX_PRACTICE'?'PRACTICE':'SIMULADO')+' · '+op.name+' · '+(op.source==='BULLEX_PRACTICE'?officeMoney(op.v,op.currency||'USD'):money(op.v));toast.classList.remove('active');void toast.offsetWidth;toast.classList.add('active');
  clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('active'),3200);
  const stage=canvas.parentElement,colors=['#43eaa7','#f4bb53','#ffffff','#61d7fa','#f891a1'];
  for(let k=0;k<38;k++){
