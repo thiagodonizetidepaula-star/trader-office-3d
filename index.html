@@ -2,10 +2,10 @@
 <style>*{box-sizing:border-box}body{margin:0;background:#0b1420;color:#e5f4f5;font:14px system-ui,sans-serif}header{padding:12px 16px;background:#152536;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}h1{font-size:18px;margin:0}small,.hint{color:#a6bfc6}button{border:1px solid #476270;background:#233d4b;color:#eefbfb;padding:10px 13px;border-radius:9px;cursor:pointer}button.primary{background:#19795f;border-color:#2ebc90}button:disabled{opacity:.5}main{max-width:1300px;margin:auto;padding:12px}.controls{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:10px}.stage{height:min(66vh,720px);min-height:390px;border:1px solid #405e70;position:relative;overflow:hidden;border-radius:15px;background:linear-gradient(#1b3344,#475f70)}#scene{width:100%;height:100%;display:block;touch-action:none}.board{position:absolute;top:10px;left:10px;background:#071b27e8;border:1px solid #60d4a6;border-radius:10px;padding:10px 12px;max-width:min(330px,75%);pointer-events:none}.board strong{display:block;color:#75f1b9;font-size:12px}.board span{display:block;font-size:13px}.info{position:absolute;right:10px;bottom:10px;background:#071b27db;border-radius:8px;padding:8px 10px;pointer-events:none;font-size:12px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0}.stat,.panel{background:#182d3d;border:1px solid #345364;padding:13px;border-radius:11px}.stat b{display:block;font-size:23px}.stat span{font-size:12px;color:#a6bfc6}.win{color:#5bdfaa}.loss{color:#ff8f93}.panel{margin:12px 0}section{overflow:auto}table{width:100%;border-collapse:collapse;min-width:520px}td,th{text-align:left;border-bottom:1px solid #304859;padding:9px}th{color:#b3cbd4}.hint{font-size:12px}#fallback{display:none;position:absolute;inset:30% 8%;text-align:center} @media(max-width:620px){.stage{height:62vh;min-height:440px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.board{padding:8px}.board span{font-size:12px}}</style>
 <script type="importmap">{"imports":{"three":"https://esm.sh/three@0.170.0","three/addons/":"https://esm.sh/three@0.170.0/examples/jsm/"}}</script></head>
 <body><header><h1>🐯 XTREME TIGER <small>· Trader Office 3D</small></h1><b class="win">● DEMONSTRAÇÃO</b></header><main>
-<div class="controls"><button id="start" class="primary">▶ Iniciar demo</button><button id="pause">⏸ Pausar</button><button id="reset">↺ Zerar</button><button id="camera">🎥 Recentrar câmera</button><button id="avatarTest" class="primary">↩ Ver equipe original</button><small id="avatarStatus" aria-live="polite">🐯 Equipe Tiger · 6 homens e 6 mulheres · rodízio automático</small><small>Arraste para girar · pinça para zoom · corredor central com salas dos dois lados</small></div>
+<div class="controls"><button id="start" class="primary">▶ Iniciar demo</button><button id="pause">⏸ Pausar</button><button id="reset">↺ Zerar</button><button id="camera">🎥 Vista geral</button><button id="camLeft">🏢 Sala esquerda</button><button id="camRight">📈 Sala direita</button><button id="camHall">🚶 Corredor</button><button id="camLounge">☕ Recepção</button><button id="quality">⚙️ Qualidade: Auto</button><button id="avatarTest" class="primary">↩ Ver equipe original</button><small id="avatarStatus" aria-live="polite">🐯 Equipe Tiger · 6 homens e 6 mulheres · rodízio automático</small><small>Arraste para girar · pinça para zoom · corredor central com salas dos dois lados</small></div>
 <div class="stage"><canvas id="scene"></canvas><div id="fallback">Não foi possível carregar o motor 3D. Verifique a conexão com a internet.</div><div class="board"><strong>🐯 XTREME TIGER · LOUSA DIGITAL</strong><span id="headline">Equipe analisando o mercado fictício…</span></div><div class="info">🏙️ 2 salas de luxo · Corredor central · Vista panorâmica</div></div>
 <div class="panel" id="dataStatus" aria-live="polite"><strong>📡 Origem: DEMONSTRAÇÃO · Sem corretora conectada</strong><div id="lastOperation">Inicie a demonstração para ver os resultados das operações simuladas nas telas do escritório.</div></div>
-<div class="stats"><div class="stat"><span>Operações fictícias</span><b id="total">0</b></div><div class="stat"><span>Vitórias</span><b class="win" id="wins">0</b></div><div class="stat"><span>Derrotas</span><b class="loss" id="losses">0</b></div><div class="stat"><span>Saldo simulado</span><b id="balance">R$ 0,00</b></div></div>
+<div class="stats"><div class="stat"><span>Operações fictícias</span><b id="total">0</b></div><div class="stat"><span>Vitórias</span><b class="win" id="wins">0</b></div><div class="stat"><span>Derrotas</span><b class="loss" id="losses">0</b></div><div class="stat"><span>Saldo simulado</span><b id="balance">R$ 0,00</b></div><div class="stat"><span>Assertividade demo</span><b id="winRate">0,0%</b></div></div>
 <div class="panel" id="detail">👥 Selecione um dos 12 traders para visualizar sua estratégia.</div>
 <h3>Histórico das operações demonstrativas</h3><section><table><thead><tr><th>Trader</th><th>Ativo</th><th>Estratégia</th><th>Resultado</th><th>Valor</th></tr></thead><tbody id="history"></tbody></table></section>
 <p class="hint">Esta versão usa geometria 3D original, produzida por código. A equipe Tiger tem 6 homens e 6 mulheres diferentes, com ternos e emblema original de tigre. Nove trabalham sentados, um descansa no sofá, outro toma café e um supervisiona. As funções se alternam a cada 65 segundos, com deslocamento animado pelo corredor. O supervisor visita as mesas e quem termina a pausa retorna à própria estação. São avatares 3D estilizados originais, não modelos The Sims nem GLB importados. Os pacotes gratuitos de móveis Kenney/reodesuxz e animações Mixamo ainda não foram incorporados. Os gráficos de candles são ilustrativos. As telas mostram os resultados efetivamente registrados pela simulação, mas não são ordens reais, cotações reais ou saldo de corretora. Para mostrar resultados reais, é necessária uma integração autenticada com a corretora. Personagens estilizados fazem movimentos simples, não são modelos do The Sims.</p></main>
@@ -13,9 +13,9 @@
 import * as THREE from 'three';import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 const $=id=>document.getElementById(id), canvas=$('scene'),scene=new THREE.Scene();scene.background=new THREE.Color('#314858');scene.fog=new THREE.Fog('#314858',24,48);
 const camera=new THREE.PerspectiveCamera(48,1,.1,100);camera.position.set(0,12.6,22);
-const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.25));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;
 const controls=new OrbitControls(camera,renderer.domElement);controls.target.set(0,1.1,1.4);controls.enableDamping=true;controls.maxPolarAngle=Math.PI/2.05;controls.minDistance=7;controls.maxDistance=34;controls.enablePan=false;controls.update();
-scene.add(new THREE.HemisphereLight(0xc8efff,0x526474,2.3));const sun=new THREE.DirectionalLight(0xffefdc,2.8);sun.position.set(13,13,-1);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-20;sun.shadow.camera.right=20;sun.shadow.camera.top=18;sun.shadow.camera.bottom=-18;scene.add(sun);
+scene.add(new THREE.HemisphereLight(0xddeeff,0x526474,1.65));const sun=new THREE.DirectionalLight(0xffefdc,2.8);sun.position.set(13,13,4);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-20;sun.shadow.camera.right=20;sun.shadow.camera.top=18;sun.shadow.camera.bottom=-18;sun.shadow.bias=-0.0004;sun.shadow.normalBias=.018;scene.add(sun);
 const mat=(color,metalness=0)=>new THREE.MeshStandardMaterial({color,metalness,roughness:.65});const wood=mat('#927052'),steel=mat('#3d5567',.4),screen=mat('#0f2635',.1),green=mat('#3ce6ac'),wall=mat('#617d88'),tile=mat('#85969a'),chair=mat('#243b4b');
 function box(w,h,d,m,x,y,z,parent=scene){const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);mesh.position.set(x,y,z);mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);return mesh}
 function ball(r,m,x,y,z,parent=scene){const mesh=new THREE.Mesh(new THREE.SphereGeometry(r,12,10),m);mesh.position.set(x,y,z);mesh.castShadow=true;parent.add(mesh);return mesh}
@@ -46,10 +46,13 @@ if(i%3===1){const skirt=new THREE.Mesh(new THREE.CylinderGeometry(.29,.36,.3,10)
 // ID card
 box(.13,.19,.02,white,.19,1.08,.187,person);
 person.traverse(obj=>{if(obj.isMesh){obj.userData.index=i;clickTargets.push(obj)}});people.push({group:person,head,arms,legs,x,z,phase:i*.7,walk:false,celebrate:0,win:true,blink:i*.48,smile});});
-function updateCharts(){charts.forEach(ch=>{if(ch.big)return;let p=ch.prices;p.push(Math.max(15,Math.min(95,p[p.length-1]+(Math.random()-.5)*12)));p.shift();const c=ch.ctx;c.fillStyle='#081a27';c.fillRect(0,0,192,112);c.strokeStyle='#2b4654';for(let y=12;y<112;y+=22){c.beginPath();c.moveTo(0,y);c.lineTo(192,y);c.stroke()}for(let k=1;k<p.length;k++){const x=k*10,up=p[k]>=p[k-1],a=104-p[k],b=104-p[k-1];c.strokeStyle=up?'#42e3aa':'#f16d85';c.fillStyle=c.strokeStyle;c.beginPath();c.moveTo(x,Math.min(a,b)-5);c.lineTo(x,Math.max(a,b)+5);c.stroke();c.fillRect(x-3,Math.min(a,b),6,Math.max(2,Math.abs(a-b)))}c.fillStyle='#bfe3ec';c.font='10px monospace';c.fillText(['EUR/USD','GBP/USD','USD/JPY','AUD/USD'][ch.seed%4]+' · DEMO',5,10);const last=demoLedger.lastByTrader[ch.seed];if(last){c.fillStyle='#071b27';c.fillRect(0,89,192,23);c.fillStyle=last.win?'#56efb7':'#ff8797';c.font='bold 11px sans-serif';c.fillText((last.win?'WIN ':'LOSS ')+(last.v>=0?'+':'')+'R$ '+last.v.toFixed(2),5,104)}ch.tex.needsUpdate=true})}updateCharts();setInterval(updateCharts,1300);
+function updateCharts(){charts.forEach(ch=>{if(ch.big)return;let p=ch.prices;p.push(Math.max(15,Math.min(95,p[p.length-1]+(Math.random()-.5)*12)));p.shift();const c=ch.ctx;c.fillStyle='#081a27';c.fillRect(0,0,192,112);c.strokeStyle='#2b4654';for(let y=12;y<112;y+=22){c.beginPath();c.moveTo(0,y);c.lineTo(192,y);c.stroke()}for(let k=1;k<p.length;k++){const x=k*10,up=p[k]>=p[k-1],a=104-p[k],b=104-p[k-1];c.strokeStyle=up?'#42e3aa':'#f16d85';c.fillStyle=c.strokeStyle;c.beginPath();c.moveTo(x,Math.min(a,b)-5);c.lineTo(x,Math.max(a,b)+5);c.stroke();c.fillRect(x-3,Math.min(a,b),6,Math.max(2,Math.abs(a-b)))}c.fillStyle='#bfe3ec';c.font='10px monospace';c.fillText(['EUR/USD','GBP/USD','USD/JPY','AUD/USD'][ch.seed%4]+' · DEMO',5,10);const last=demoLedger.lastByTrader[ch.seed];if(last){c.fillStyle='#071b27';c.fillRect(0,89,192,23);c.fillStyle=last.win?'#56efb7':'#ff8797';c.font='bold 11px sans-serif';c.fillText((last.win?'WIN ':'LOSS ')+(last.v>=0?'+':'')+'R$ '+last.v.toFixed(2),5,104)}ch.tex.needsUpdate=true})}updateCharts();setInterval(()=>{if(!document.hidden)updateCharts()},2000);
 // Luxury high-rise suite: central corridor, distinct left/right offices and sunlit exterior windows.
-const glass=new THREE.MeshPhysicalMaterial({color:0xc8f3ff,transparent:true,opacity:.13,roughness:.06,metalness:.08,depthWrite:false,side:THREE.DoubleSide}),trim=mat('#263d4b',.4);
-const brass=mat('#b89656',.67),marble=mat('#d5d8d5',.09),walnut=mat('#5d4338'),navy=mat('#273c55'),cream=mat('#e9e2d4'),stone=mat('#a9a9a3');
+const glass=new THREE.MeshPhysicalMaterial({color:0xc8f3ff,transparent:true,opacity:.115,roughness:.13,metalness:0,depthWrite:false,side:THREE.DoubleSide}),trim=mat('#263d4b',.4);
+const brass=new THREE.MeshStandardMaterial({color:'#b89656',metalness:.82,roughness:.33}),
+marble=new THREE.MeshStandardMaterial({color:'#d5d8d5',metalness:0,roughness:.27}),
+walnut=new THREE.MeshStandardMaterial({color:'#5d4338',metalness:0,roughness:.39}),
+navy=mat('#273c55'),cream=mat('#e9e2d4'),stone=mat('#a9a9a3');
 function glassWall(x,y,z,w,h,d){box(w,h,d,glass,x,y,z);box(w,.075,d+.065,trim,x,y+h/2,z);box(w,.075,d+.065,trim,x,y-h/2,z)}
 // A 2.3m central passage running from the entrance/reception to the back wall.
 box(2.22,.032,15.5,walnut,0,.03,1.8);
@@ -124,7 +127,7 @@ for(let k=0;k<5;k++){
  const patch=new THREE.Mesh(new THREE.PlaneGeometry(1.15,2.15),sunPatch);
  patch.rotation.x=-Math.PI/2;patch.rotation.z=-.45;patch.position.set(5.7-k*.68,.081,-4.25+k*1.65);scene.add(patch);
 }
-const daylight=new THREE.DirectionalLight(0xffdfaa,1.25);daylight.position.set(13,9,1);scene.add(daylight);
+// Single shadow-casting sun; avoid a second directional light on Android.
 // Hallway accents, room numbers, elevator-like entry and floor runner.
 box(2.16,.03,2.0,navy,0,.068,7.8);
 for(const side of [-1,1]){box(.13,4.5,.14,brass,side*1.17,2.25,4.72);box(.30,.15,.14,brass,side*1.18,2.8,2.65);}
@@ -170,7 +173,7 @@ function bigTV(pair,x,y,z,w,h,seed){
  const surface=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide}));
  surface.position.set(x,y,z+.02);scene.add(surface);return surface
 }
-setInterval(()=>charts.filter(c=>c.big).forEach(c=>{const p=c.prices;p.shift();p.push(Math.max(35,Math.min(120,p[p.length-1]+(Math.random()-.48)*8)));drawBigChart(c)}),1800);
+setInterval(()=>{if(document.hidden)return;charts.filter(c=>c.big).forEach(c=>{const p=c.prices;p.shift();p.push(Math.max(35,Math.min(120,p[p.length-1]+(Math.random()-.48)*8)));drawBigChart(c)})},2200);
 // TVs on back wall of each office, never on the central glass partition.
 bigTV('EUR/USD',-4,2.6,-5.72,3.2,1.9,6);bigTV('GBP/USD',4,2.6,-5.72,3.2,1.9,16);
 // Separate waiting room beyond the office glass: carpet, sofa, coffee table and TV.
@@ -206,7 +209,7 @@ function tick(){
  demoLedger.total=total;demoLedger.wins=wins;demoLedger.losses=losses;demoLedger.balance=balance;demoLedger.last=op;
  demoLedger.lastByTrader[i]=op;demoLedger.recent.unshift(op);demoLedger.recent.length=Math.min(25,demoLedger.recent.length);
  selected=i;
- $('total').textContent=total;$('wins').textContent=wins;$('losses').textContent=losses;$('balance').textContent=money(balance);
+ $('total').textContent=total;$('wins').textContent=wins;$('losses').textContent=losses;$('balance').textContent=money(balance);$('winRate').textContent=(total?100*wins/total:0).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';
  $('headline').textContent=names[i]+' · '+asset+' · '+strategies[i]+' · '+(win?'WIN DEMO ✅':'LOSS DEMO ❌');
  $('lastOperation').textContent='Última operação demonstrativa #'+op.id+' · '+op.time+' · '+op.name+' · '+op.asset+' · '+(win?'WIN':'LOSS')+' · '+money(v)+' · Saldo acumulado: '+money(balance);
  const tr=document.createElement('tr');tr.innerHTML='<td>'+op.name+'</td><td>'+asset+'</td><td>'+op.strategy+'</td><td class="'+(win?'win':'loss')+'">'+(win?'WIN DEMO':'LOSS DEMO')+'</td><td>'+money(v)+'</td>';
@@ -215,7 +218,26 @@ function tick(){
  people[i].phase+=3;people[i].celebrate=clock.getElapsedTime()+2.5;people[i].win=win;
  signals[i].material.color.set(win?0xffffff:0xff5b75);showDetail();
 }
-$('start').onclick=()=>{if(timer===null)timer=setInterval(tick,4000)};$('pause').onclick=()=>{clearInterval(timer);timer=null};$('reset').onclick=()=>{$('pause').click();total=wins=losses=balance=0;$('total').textContent=$('wins').textContent=$('losses').textContent='0';$('balance').textContent=money(0);$('headline').textContent='Equipe analisando o mercado fictício…';$('history').innerHTML='';Object.assign(demoLedger,{total:0,wins:0,losses:0,balance:0,last:null,recent:[],lastByTrader:Array(12).fill(null)});$('lastOperation').textContent='Simulação zerada. Inicie a demo para registrar novas operações.';charts.filter(c=>c.big).forEach(drawBigChart);updateCharts()};$('camera').onclick=()=>{camera.position.set(0,12.6,22);controls.target.set(0,1.1,1.4);controls.update()};
+$('start').onclick=()=>{if(timer===null)timer=setInterval(tick,4000)};$('pause').onclick=()=>{clearInterval(timer);timer=null};$('reset').onclick=()=>{$('pause').click();total=wins=losses=balance=0;$('total').textContent=$('wins').textContent=$('losses').textContent='0';$('balance').textContent=money(0);$('winRate').textContent='0,0%';$('headline').textContent='Equipe analisando o mercado fictício…';$('history').innerHTML='';Object.assign(demoLedger,{total:0,wins:0,losses:0,balance:0,last:null,recent:[],lastByTrader:Array(12).fill(null)});$('lastOperation').textContent='Simulação zerada. Inicie a demo para registrar novas operações.';charts.filter(c=>c.big).forEach(drawBigChart);updateCharts()};const cameraViews={
+ camera:[[0,12.6,22],[0,1.1,1.4]],
+ camLeft:[[-7.6,5.8,8.8],[-4.8,1.4,-1.0]],
+ camRight:[[7.6,5.8,8.8],[4.8,1.4,-1.0]],
+ camHall:[[0,3.7,9.2],[0,1.4,-3.2]],
+ camLounge:[[-3.8,4.2,12.5],[-3.6,1.0,7.1]]
+};
+for(const [id,[position,target]] of Object.entries(cameraViews)){
+ $(id).onclick=()=>{camera.position.set(...position);controls.target.set(...target);controls.update()};
+}
+const isMobile=matchMedia('(max-width: 750px)').matches;
+const qualityModes=['Auto','Econômica','Alta'];let qualityIndex=0;
+$('quality').onclick=()=>{
+ qualityIndex=(qualityIndex+1)%qualityModes.length;
+ const ratio=qualityIndex===1?1:qualityIndex===2?Math.min(devicePixelRatio,1.7):Math.min(devicePixelRatio,isMobile?1.25:1.5);
+ renderer.setPixelRatio(ratio);
+ renderer.shadowMap.enabled=qualityIndex!==1;
+ $('quality').textContent='⚙️ Qualidade: '+qualityModes[qualityIndex];
+ resize();
+};
 function resize(){const r=canvas.getBoundingClientRect();if(r.width&&r.height){camera.aspect=r.width/r.height;camera.updateProjectionMatrix();renderer.setSize(r.width,r.height,false)}}new ResizeObserver(resize).observe(canvas);resize();
 // Xtreme Tiger team: twelve distinct original stylized executives (six women, six men).
 // Procedural 3D only, no unverified external character files or dependencies.
@@ -488,5 +510,5 @@ $('avatarTest').onclick=()=>{
  else $('avatarStatus').textContent='Equipe original de 12 traders · versão anterior';
 };
 updateShift(0);
-const clock=new THREE.Clock();function frame(){requestAnimationFrame(frame);const t=clock.getElapsedTime();updateTeam(t);people.forEach((p,i)=>{const cycle=(t*.22+i*1.41)%(Math.PI*2);const going=false;p.walk=false;p.group.position.set(p.x,0,p.z+1);p.group.rotation.y=Math.PI;p.head.rotation.z=Math.sin(t*2+i)*.06;p.head.rotation.x=.12+Math.sin(t*.9+i)*.025;p.head.scale.y=(Math.sin(t*1.6+i*1.8)>.995?.94:1);p.smile.scale.x=t<p.celebrate?(p.win?1.4:.55):1;signals[i].material.opacity=Math.max(0,Math.min(1,(p.celebrate-t)*1.5));signals[i].position.y=2.38+(signals[i].material.opacity?Math.sin(t*5)*.055:0);p.arms.forEach((arm,k)=>{arm.rotation.z=(k===0?-.09:.09)+(t<p.celebrate?Math.sin(t*4+i)*.08:Math.sin(t*8+i+k*Math.PI)*.045);arm.rotation.x=-1.2+Math.sin(t*9+i+k*Math.PI)*.065});p.legs.forEach((leg,k)=>{leg.rotation.x=going?Math.sin(t*8+i+k*Math.PI)*.3:0})});controls.update();renderer.render(scene,camera)}frame();
+const clock=new THREE.Clock();function frame(){requestAnimationFrame(frame);const t=clock.getElapsedTime();if(document.hidden)return;updateTeam(t);people.forEach((p,i)=>{const cycle=(t*.22+i*1.41)%(Math.PI*2);const going=false;p.walk=false;p.group.position.set(p.x,0,p.z+1);p.group.rotation.y=Math.PI;p.head.rotation.z=Math.sin(t*2+i)*.06;p.head.rotation.x=.12+Math.sin(t*.9+i)*.025;p.head.scale.y=(Math.sin(t*1.6+i*1.8)>.995?.94:1);p.smile.scale.x=t<p.celebrate?(p.win?1.4:.55):1;signals[i].material.opacity=Math.max(0,Math.min(1,(p.celebrate-t)*1.5));signals[i].position.y=2.38+(signals[i].material.opacity?Math.sin(t*5)*.055:0);p.arms.forEach((arm,k)=>{arm.rotation.z=(k===0?-.09:.09)+(t<p.celebrate?Math.sin(t*4+i)*.08:Math.sin(t*8+i+k*Math.PI)*.045);arm.rotation.x=-1.2+Math.sin(t*9+i+k*Math.PI)*.065});p.legs.forEach((leg,k)=>{leg.rotation.x=going?Math.sin(t*8+i+k*Math.PI)*.3:0})});controls.update();renderer.render(scene,camera)}frame();
 </script></body></html>
