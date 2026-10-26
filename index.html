@@ -102,8 +102,8 @@ if(i%3===1){const skirt=new THREE.Mesh(new THREE.CylinderGeometry(.29,.36,.3,10)
 // ID card
 box(.13,.19,.02,white,.19,1.08,.187,person);
 person.traverse(obj=>{if(obj.isMesh){obj.userData.index=i;clickTargets.push(obj)}});people.push({group:person,head,arms,legs,x,z,phase:i*.7,walk:false,celebrate:0,win:true,blink:i*.48,smile});});
-function updateCharts(){charts.forEach(ch=>{if(ch.big)return;let p=ch.prices;p.push(Math.max(15,Math.min(95,p[p.length-1]+(Math.random()-.5)*12)));p.shift();const c=ch.ctx;c.fillStyle='#081a27';c.fillRect(0,0,192,112);c.strokeStyle='#2b4654';for(let y=12;y<112;y+=22){c.beginPath();c.moveTo(0,y);c.lineTo(192,y);c.stroke()}for(let k=1;k<p.length;k++){const x=k*10,up=p[k]>=p[k-1],a=104-p[k],b=104-p[k-1];c.strokeStyle=up?'#42e3aa':'#f16d85';c.fillStyle=c.strokeStyle;c.beginPath();c.moveTo(x,Math.min(a,b)-5);c.lineTo(x,Math.max(a,b)+5);c.stroke();c.fillRect(x-3,Math.min(a,b),6,Math.max(2,Math.abs(a-b)))}c.fillStyle='#bfe3ec';c.font='10px monospace';const labMonitor=[0,1,2,6,7,8].includes(ch.seed),study=studyForName(strategies[ch.seed]);
- c.fillText(labMonitor?'LAB '+(study?Math.round(studyRate(study))+'%':'—'):'OPS · DEMO',5,10);const last=demoLedger.lastByTrader[ch.seed];if(last&&!labMonitor){c.fillStyle='#071b27';c.fillRect(0,89,192,23);c.fillStyle=last.win?'#56efb7':'#ff8797';c.font='bold 11px sans-serif';c.fillText((last.win?'WIN ':'LOSS ')+(last.v>=0?'+':'')+'R$ '+last.v.toFixed(2),5,104)}
+function updateCharts(){charts.forEach(ch=>{if(ch.big)return;let p=ch.prices;p.push(Math.max(15,Math.min(95,p[p.length-1]+(Math.random()-.5)*12)));p.shift();const c=ch.ctx;c.fillStyle='#081a27';c.fillRect(0,0,192,112);c.strokeStyle='#2b4654';for(let y=12;y<112;y+=22){c.beginPath();c.moveTo(0,y);c.lineTo(192,y);c.stroke()}for(let k=1;k<p.length;k++){const x=k*10,up=p[k]>=p[k-1],a=104-p[k],b=104-p[k-1];c.strokeStyle=up?'#42e3aa':'#f16d85';c.fillStyle=c.strokeStyle;c.beginPath();c.moveTo(x,Math.min(a,b)-5);c.lineTo(x,Math.max(a,b)+5);c.stroke();c.fillRect(x-3,Math.min(a,b),6,Math.max(2,Math.abs(a-b)))}c.fillStyle='#bfe3ec';c.font='10px monospace';const labMonitor=[0,1,2,6,7,8].includes(ch.seed),observed=displayedStudies(),study=labMonitor?(bridgeLinked?observed[ch.seed%Math.max(1,observed.length)]:studyForName(strategies[ch.seed])):null;
+ c.fillText(labMonitor?'LAB '+(study?Math.round(studyRate(study))+'%':'—'):bridgeLinked?'OPS · PRACTICE':'OPS · DEMO',5,10);const last=demoLedger.lastByTrader[ch.seed];if(last&&!labMonitor){c.fillStyle='#071b27';c.fillRect(0,89,192,23);c.fillStyle=last.win?'#56efb7':'#ff8797';c.font='bold 11px sans-serif';c.fillText((last.win?'WIN ':'LOSS ')+(last.v>=0?'+':'')+'R$ '+last.v.toFixed(2),5,104)}
  if(labMonitor&&study){c.fillStyle='#071b27';c.fillRect(0,89,192,23);c.fillStyle=studyRate(study)>60?'#56efb7':'#ff8797';c.font='bold 10px sans-serif';c.fillText(study.name+' · '+formatRate(study),5,104)}ch.tex.needsUpdate=true})}updateCharts();setInterval(()=>{if(!document.hidden)updateCharts()},2000);
 // Luxury high-rise suite: central corridor, distinct left/right offices and sunlit exterior windows.
 const glass=new THREE.MeshPhysicalMaterial({color:0xc8f3ff,transparent:true,opacity:.115,roughness:.13,metalness:0,depthWrite:false,side:THREE.DoubleSide}),trim=mat('#263d4b',.4);
@@ -257,35 +257,44 @@ function drawBigChart(c){
 }
 
 function drawRoomTV(c){
- const g=c.ctx,w=c.cv.width,h=c.cv.height,lab=c.roomView==='lab';
+ const g=c.ctx,w=c.cv.width,h=c.cv.height,lab=c.roomView==='lab',live=bridgeLinked,shot=officeSnapshot;
  g.fillStyle='#071c29';g.fillRect(0,0,w,h);
  g.fillStyle=lab?'#f2c881':'#7bf0c4';g.font='bold 30px system-ui';
- g.fillText(lab?'🧠 SALA DE ESTRATÉGIAS':'📈 SALA DE OPERAÇÕES',29,48);
- g.font='18px system-ui';g.fillStyle='#accbd7';g.fillText('XTREME TIGER · AMBIENTE SIMULADO · BULLEX NÃO CONECTADA',29,79);
- g.fillStyle='#173345';g.fillRect(18,93,w-36,50);
+ g.fillText(lab?'SALA DE ESTRATEGIAS':'SALA DE OPERACOES',25,47);
+ g.fillStyle='#b1cbd4';g.font='18px system-ui';
+ g.fillText(live?'BULLEX PRACTICE / SERVIDOR AUTENTICADO / SOMENTE LEITURA':'SIMULACAO LOCAL / BULLEX NAO VINCULADA',25,78);
+ g.fillStyle='#173345';g.fillRect(18,91,w-36,49);
  if(lab){
-  const ok=approvedStudies();
-  g.fillStyle='#ecf0ec';g.font='bold 24px system-ui';g.fillText('APROVADAS: '+ok.length+' / '+labStudies.length,29,127);
-  const order=[...labStudies].sort((a,b)=>studyRate(b)-studyRate(a));
-  order.slice(0,11).forEach((x,i)=>{
-   const y=167+i*22,pass=ok.includes(x);
-   g.fillStyle=i%2?'#0e2c3b':'#123041';g.fillRect(18,y-17,w-36,22);
-   g.fillStyle=pass?'#5ce9a6':'#a7b7c1';g.font='16px system-ui';
-   g.fillText((pass?'✓ ':'· ')+x.name,29,y);
-   g.fillStyle=pass?'#5ce9a6':'#eba1a2';g.textAlign='right';g.fillText(formatRate(x)+' · '+x.samples+' TESTES',w-28,y);g.textAlign='left';
+  const ok=approvedStudies(),studyList=[...displayedStudies()].sort((a,b)=>studyRate(b)-studyRate(a));
+  g.fillStyle='#e8f4ee';g.font='bold 23px system-ui';
+  g.fillText('ACIMA DE 60% / MIN 30: '+ok.length+' DE '+studyList.length,28,125);
+  studyList.slice(0,10).forEach((x,i)=>{
+   const y=164+i*24,pass=ok.includes(x);
+   g.fillStyle=i%2?'#0e2c3b':'#123041';g.fillRect(20,y-17,w-40,24);
+   g.fillStyle=pass?'#5ce9a6':'#b4c8cc';g.font='16px system-ui';
+   g.fillText((pass?'+ ':'- ')+x.name,28,y);
+   g.textAlign='right';g.fillText(formatRate(x)+' / '+x.samples+' FINALIZADAS',w-27,y);g.textAlign='left';
   });
-  g.fillStyle='#f2c881';g.font='bold 18px system-ui';g.fillText('FILTRO: MAIS DE 60% · MÍNIMO 30 · TESTES FICTÍCIOS',29,h-18);
+  g.fillStyle='#e0c89a';g.font='bold 16px system-ui';
+  g.fillText(live?'RESULTADOS PRACTICE / FILTRO NAO CONTROLA O BOT':'DADOS FICTICIOS / NAO SAO BACKTESTS REAIS',28,h-18);
  }else{
-  g.fillStyle='#e9f6f0';g.font='bold 23px system-ui';g.fillText('SINAIS '+signalLog.length+' · WIN '+demoLedger.wins+' / LOSS '+demoLedger.losses,29,126);
-  g.fillStyle=demoLedger.balance>=0?'#75e5b2':'#ff8597';g.font='bold 20px system-ui';g.fillText('SALDO DEMO: R$ '+demoLedger.balance.toFixed(2),w-285,125);
-  for(let i=0;i<Math.min(8,signalLog.length);i++){
-   const x=signalLog[i],y=178+i*28;
-   g.fillStyle=i%2?'#0e2c3b':'#123041';g.fillRect(18,y-21,w-36,27);
-   g.font='17px system-ui';g.fillStyle='#e6f7f5';g.fillText('#'+x.id+' '+x.asset+' '+x.direction.toUpperCase()+' · '+x.strategy,29,y);
-   g.fillStyle=x.status==='WIN'?'#5cedb6':x.status==='LOSS'?'#ff929d':'#efd18b';
-   g.textAlign='right';g.fillText(x.status,w-29,y);g.textAlign='left';
-  }
-  g.fillStyle='#8adcc5';g.font='bold 18px system-ui';g.fillText('EXECUÇÃO LOCAL DEMO · NENHUMA ORDEM NA CORRETORA',29,h-20);
+  const management=live?(shot?.management||{}):{wins:demoLedger.wins,losses:demoLedger.losses,profit:demoLedger.balance};
+  const trades=live?[...(shot?.trades||[])].reverse():signalLog;
+  const profit=Number(management.profit||0),unit=live?String(shot?.currency||'USD'):'BRL';
+  g.fillStyle='#ebf5f0';g.font='bold 23px system-ui';
+  g.fillText('REGISTROS '+trades.length+' / WIN '+(management.wins||0)+' LOSS '+(management.losses||0),28,125);
+  g.fillStyle=profit>=0?'#83e6b5':'#ff8791';g.font='bold 19px system-ui';
+  g.fillText('RESULTADO: '+unit+' '+profit.toFixed(2),w-255,126);
+  trades.slice(0,8).forEach((x,i)=>{
+   const y=177+i*28;
+   g.fillStyle=i%2?'#0e2c3b':'#123041';g.fillRect(20,y-21,w-40,26);
+   g.fillStyle='#e6f7f5';g.font='17px system-ui';
+   g.fillText('#'+String(x.id??'-')+' '+String(x.asset||'')+' '+String(x.direction||'').toUpperCase()+' / '+String(x.strategy||''),29,y);
+   g.textAlign='right';g.fillStyle=x.status==='WIN'?'#5cedb6':x.status==='LOSS'?'#ff929d':'#efd18b';
+   g.fillText(String(x.status||'?'),w-29,y);g.textAlign='left';
+  });
+  g.fillStyle='#8adcc5';g.font='bold 17px system-ui';
+  g.fillText(live?'BOT AUTONOMO PRACTICE / VISUALIZACAO SOMENTE LEITURA':'OPERACOES FICTICIAS / NAO ENVIADAS A CORRETORA',28,h-19);
  }
  c.tex.needsUpdate=true;
 }
@@ -368,29 +377,39 @@ $('closeInspector').onclick=releaseFocus;
 $('focusReset').onclick=()=>{if(focusTarget&&focusPosition){camera.position.copy(focusPosition);controls.target.copy(focusTarget);controls.update();}};
 function refreshInspector(){
  if(!activeScreen)return;
- const ss=activeScreen,desk=ss.kind==='desk',isLab=ss.kind==='lab'||(desk&&[0,1,2,6,7,8].includes(ss.index));
- const trader=desk?names[ss.index]:null;
- $('screenTitle').textContent=isLab?'🧠 '+(desk?trader+' · Laboratório':'Laboratório de Estratégias'):'📈 '+(desk?trader+' · Operações':'Central de Operações');
- $('screenSource').textContent='ESTUDO E OPERAÇÕES SINTÉTICOS · Nenhuma conexão com a Bullex';
- const entries=isLab?(desk?labStudies.filter(x=>x.name===strategies[ss.index]):[...labStudies].sort((a,b)=>studyRate(b)-studyRate(a))):(desk?demoLedger.recent.filter(op=>op.name===trader):demoLedger.recent);
- const summary=isLab?[
-  ['Estratégias aprovadas',approvedStudies().length],
-  ['Limite de aprovação','>60% · 30 testes'],
-  ['Origem dos testes','FICTÍCIA'],
-  ['Conexão Bullex','DESCONECTADA']
+ const ss=activeScreen,desk=ss.kind==='desk',
+       lab=ss.kind==='lab'||desk&&[0,1,2,6,7,8].includes(ss.index),
+       linked=bridgeLinked,shot=officeSnapshot;
+ $('screenTitle').textContent=lab?'🧠 Laboratório de Estratégias':'📈 Central de Operações';
+ $('screenSource').textContent=linked?'BULLEX PRACTICE · SERVIDOR AUTENTICADO · SOMENTE LEITURA':'SIMULAÇÃO SINTÉTICA · SEM DADOS REAIS';
+ const studies=[...displayedStudies()].sort((a,b)=>studyRate(b)-studyRate(a));
+ const trades=linked?[...(shot?.trades||[])].reverse():demoLedger.recent;
+ const entries=lab?(desk?studies.slice(ss.index%Math.max(1,studies.length),ss.index%Math.max(1,studies.length)+1):studies):trades;
+ const m=shot?.management||{};
+ const boxes=lab?[
+  ['Aprovadas (>60%; mín. 30)',approvedStudies().length],
+  ['Estratégias observadas',studies.length],
+  ['Fonte',linked?'BOT PRACTICE':'SINTÉTICA'],
+  ['Automação pelo filtro','NÃO']
+ ]:linked?[
+  ['Ordens observadas',trades.length],
+  ['WIN / LOSS hoje',(m.wins||0)+' / '+(m.losses||0)],
+  ['Lucro/prejuízo PRACTICE',officeMoney(m.profit||0,shot?.currency||'USD')],
+  ['Status do bot',shot?.running?'EM EXECUÇÃO':shot?.connected?'PARADO':'DESCONECTADO']
  ]:[
-  ['Operações demo',demoLedger.total],['WIN / LOSS',demoLedger.wins+' / '+demoLedger.losses],
-  ['Saldo demo',money(demoLedger.balance)],['Sinais gerados',signalLog.length]
+  ['Operações fictícias',demoLedger.total],['WIN / LOSS',demoLedger.wins+' / '+demoLedger.losses],
+  ['Saldo fictício',money(demoLedger.balance)],['Sinais gerados',signalLog.length]
  ];
- $('screenSummary').replaceChildren(...summary.map(([label,value])=>{const x=document.createElement('span'),l=document.createElement('div'),v=document.createElement('b');l.textContent=label;v.textContent=value;x.append(l,v);return x}));
- $('inspectorListTitle').textContent=isLab?'Estratégias analisadas':'Últimas operações executadas na demonstração';
- const host=$('screenOps');host.replaceChildren();
- if(!entries.length){const el=document.createElement('p');el.textContent='Sem registros até o momento.';host.append(el);}
- for(const item of entries.slice(0,12)){
-  const el=document.createElement('div');el.className='miniOp';
-  el.textContent=isLab?item.name+' · '+formatRate(item)+' · '+item.samples+' TESTES SINTÉTICOS · '+(approvedStudies().includes(item)?'APROVADA':'EM ESTUDO'):
-  item.time+' · '+item.name+' · '+item.asset+' · '+(item.win?'✅ WIN':'❌ LOSS')+' · '+money(item.v)+' · '+item.strategy;
-  host.append(el);
+ $('screenSummary').replaceChildren(...boxes.map(([k,v])=>{const box=document.createElement('span'),title=document.createElement('div'),value=document.createElement('b');title.textContent=k;value.textContent=v;box.append(title,value);return box}));
+ $('inspectorListTitle').textContent=lab?'Estratégias e suas taxas':'Últimas operações';
+ const area=$('screenOps');area.replaceChildren();
+ if(!entries.length){const p=document.createElement('p');p.textContent='Ainda não há dados para esta tela.';area.append(p);}
+ for(const x of entries.slice(0,12)){
+  const e=document.createElement('div');e.className='miniOp';
+  e.textContent=lab?x.name+' · '+formatRate(x)+' · '+x.samples+(linked?' ordens finalizadas':' testes fictícios')+' · '+(approvedStudies().includes(x)?'APROVADA NO FILTRO':'EM ESTUDO'):
+  linked?String(x.time||'')+' · '+String(x.asset||'')+' · '+String(x.direction||'').toUpperCase()+' · '+String(x.status||'')+' · '+String(x.strategy||'')+' · '+(Number.isFinite(Number(x.profit))&&x.profit!==undefined?officeMoney(x.profit,shot?.currency||'USD'):'Pendente'):
+  x.time+' · '+x.name+' · '+x.asset+' · '+(x.win?'WIN':'LOSS')+' · '+money(x.v);
+  area.append(e);
  }
 }
 canvas.addEventListener('pointerdown',e=>down=[e.clientX,e.clientY]);
