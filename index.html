@@ -260,9 +260,9 @@ function tick(){
  $('history').prepend(tr);if($('history').children.length>100)$('history').lastElementChild.remove();
  charts.filter(c=>c.big).forEach(drawBigChart);updateCharts();
  people[i].phase+=3;people[i].celebrate=clock.getElapsedTime()+2.5;people[i].win=win;
- signals[i].material.color.set(win?0xffffff:0xff5b75);showDetail();saveDemoHistory();
+ signals[i].material.color.set(win?0xffffff:0xff5b75);if(win)celebrateWin(op);else if(team[i])team[i].lossUntil=clock.getElapsedTime()+1.6;showDetail();refreshInspector();saveDemoHistory();
 }
-$('start').onclick=()=>{if(timer===null)timer=setInterval(tick,4000)};$('pause').onclick=()=>{clearInterval(timer);timer=null};$('reset').onclick=()=>{$('pause').click();total=wins=losses=balance=0;$('total').textContent=$('wins').textContent=$('losses').textContent='0';$('balance').textContent=money(0);$('winRate').textContent='0,0%';$('headline').textContent='Equipe analisando o mercado fictício…';$('history').innerHTML='';Object.assign(demoLedger,{total:0,wins:0,losses:0,balance:0,last:null,recent:[],lastByTrader:Array(12).fill(null)});$('lastOperation').textContent='Simulação zerada. Inicie a demo para registrar novas operações.';charts.filter(c=>c.big).forEach(drawBigChart);updateCharts();try{localStorage.removeItem('xtremeTigerOfficeDemo1')}catch(e){} };const cameraViews={
+$('start').onclick=()=>{if(timer===null)timer=setInterval(tick,4000)};$('pause').onclick=()=>{clearInterval(timer);timer=null};$('reset').onclick=()=>{$('pause').click();total=wins=losses=balance=0;$('total').textContent=$('wins').textContent=$('losses').textContent='0';$('balance').textContent=money(0);$('winRate').textContent='0,0%';$('headline').textContent='Equipe analisando o mercado fictício…';$('history').innerHTML='';Object.assign(demoLedger,{total:0,wins:0,losses:0,balance:0,last:null,recent:[],lastByTrader:Array(12).fill(null)});$('lastOperation').textContent='Simulação zerada. Inicie a demo para registrar novas operações.';charts.filter(c=>c.big).forEach(drawBigChart);updateCharts();refreshInspector();$('winToast').classList.remove('active');try{localStorage.removeItem('xtremeTigerOfficeDemo1')}catch(e){} };const cameraViews={
  camera:[[0,12.6,22],[0,1.1,1.4]],
  camLeft:[[-7.6,5.8,8.8],[-4.8,1.4,-1.0]],
  camRight:[[7.6,5.8,8.8],[4.8,1.4,-1.0]],
@@ -273,6 +273,63 @@ for(const [id,[position,target]] of Object.entries(cameraViews)){
  $(id).onclick=()=>{camera.position.set(...position);controls.target.set(...target);controls.update()};
 }
 
+// Optional sound is activated ONLY by user gesture. Mobile browsers reject unsolicited audio.
+let officeSoundEnabled=false,officeAudio=null,phoneInterval=null,toastTimer=null;
+function activateOfficeAudio(){
+ const AudioCtx=window.AudioContext||window.webkitAudioContext;
+ if(!AudioCtx)return false;
+ try{if(!officeAudio)officeAudio=new AudioCtx();officeAudio.resume().catch(()=>{});return true}catch(e){console.warn('Áudio indisponível',e);return false}
+}
+function beep(start,duration,freq,endFreq,volume=0.09,type='sine',pan=0){
+ if(!officeAudio||!officeSoundEnabled||document.hidden)return;
+ const osc=officeAudio.createOscillator(),env=officeAudio.createGain(),st=officeAudio.createStereoPanner?officeAudio.createStereoPanner():null;
+ osc.type=type;osc.frequency.setValueAtTime(freq,start);if(endFreq!==undefined)osc.frequency.linearRampToValueAtTime(endFreq,start+duration);
+ env.gain.setValueAtTime(.0001,start);env.gain.exponentialRampToValueAtTime(volume,start+.018);
+ env.gain.exponentialRampToValueAtTime(.0001,start+duration);
+ osc.connect(env);if(st){st.pan.value=pan;env.connect(st);st.connect(officeAudio.destination)}else env.connect(officeAudio.destination);
+ osc.start(start);osc.stop(start+duration+.04);
+}
+function winSound(){
+ if(!officeSoundEnabled||!officeAudio)return;
+ const now=officeAudio.currentTime+.04;
+ // Brief office celebration horn, not a continuous siren.
+ for(let k=0;k<3;k++){beep(now+k*.18,.14,440+k*110,480+k*120,.07,'triangle');beep(now+k*.18,.14,660+k*110,700+k*130,.025,'sawtooth');}
+}
+function phoneRing(){
+ if(!officeSoundEnabled||!officeAudio||document.hidden)return;
+ const now=officeAudio.currentTime+.04;
+ // Classic two-tone reception telephone: double ring, then silence.
+ for(let ring=0;ring<2;ring++)for(let n=0;n<5;n++){
+  const t=now+ring*1.55+n*.15;
+  beep(t,.13,440,460,.035,'sine',-.55);beep(t,.13,480,505,.033,'sine',-.55);
+ }
+ $('headline').textContent='☎️ Telefone tocando na recepção · Xtreme Tiger';
+}
+$('soundToggle').onclick=()=>{
+ if(!officeSoundEnabled){
+  if(!activateOfficeAudio()){$('soundToggle').textContent='Áudio indisponível';return;}
+  officeSoundEnabled=true;phoneInterval=setInterval(phoneRing,600000);
+  $('soundToggle').textContent='🔊 Som ligado';$('soundToggle').setAttribute('aria-pressed','true');
+ }else{
+  officeSoundEnabled=false;clearInterval(phoneInterval);phoneInterval=null;
+  $('soundToggle').textContent='🔇 Ativar sons';$('soundToggle').setAttribute('aria-pressed','false');
+ }
+};
+function celebrateWin(op){
+ const now=clock.getElapsedTime();for(const p of team){
+  if(p.role==='desk'&&(p.index===names.indexOf(op.name)||Math.abs(p.index-names.indexOf(op.name))<=1))p.celebrateUntil=now+2.4;
+ }
+ const toast=$('winToast');toast.textContent='🎉 WIN DEMO · '+op.name+' · '+money(op.v);toast.classList.remove('active');void toast.offsetWidth;toast.classList.add('active');
+ clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('active'),2600);
+ const stage=canvas.parentElement,colors=['#43eaa7','#f4bb53','#ffffff','#61d7fa','#f891a1'];
+ for(let k=0;k<38;k++){
+  const bit=document.createElement('i');bit.className='confettiPiece';bit.style.left=(8+Math.random()*84)+'%';
+  bit.style.background=colors[k%colors.length];bit.style.setProperty('--dur',(1.8+Math.random()*1.3)+'s');
+  bit.style.setProperty('--dx',(-100+Math.random()*200)+'px');bit.style.setProperty('--turn',(420+Math.random()*680)+'deg');
+  stage.append(bit);bit.addEventListener('animationend',()=>bit.remove(),{once:true});setTimeout(()=>bit.remove(),3500);
+ }
+ winSound();
+}
 const demoStorageKey='xtremeTigerOfficeDemo1';
 function saveDemoHistory(){
  try{localStorage.setItem(demoStorageKey,JSON.stringify({version:1,total,wins,losses,balance,recent:demoLedger.recent}))}catch(e){console.warn('Histórico demo não pôde ser salvo',e)}
@@ -300,7 +357,7 @@ function restoreDemoHistory(){
    $('headline').textContent='Demonstração recuperada · '+total+' operações simuladas';
    $('lastOperation').textContent='Histórico local da demonstração · Última: '+op.name+' · '+op.asset+' · '+(op.win?'WIN':'LOSS')+' · '+money(op.v)+' · Saldo demo '+money(balance);
   }
-  charts.filter(c=>c.big).forEach(drawBigChart);updateCharts();
+  charts.filter(c=>c.big).forEach(drawBigChart);updateCharts();refreshInspector();
  }catch(e){console.warn('Histórico demo não pôde ser recuperado',e)}
 }
 restoreDemoHistory();
@@ -416,8 +473,12 @@ function buildStaffAvatar(i){
  // Tiny custom tiger emblem sewn on the suit lapel.
  const patch=new THREE.Mesh(new THREE.PlaneGeometry(.15,.15),logoMaterial);
  patch.position.set(-.215,1.16,.245);upper.add(patch);
- const hands=[];
+ const hands=[],cheerArms=new THREE.Group();upper.add(cheerArms);cheerArms.visible=false;
  for(const side of [-1,1]){
+  // WIN pose: both arms raised, separate from the desk typing and resting poses.
+  seg(cheerArms,side*.31,1.25,.05,side*.51,1.52,.12,.103,.082,suit);
+  seg(cheerArms,side*.51,1.52,.12,side*.47,1.83,.20,.078,.061,suit);
+  sph(cheerArms,side*.47,1.88,.21,.083,.08,.078,skin);
   // Resting pose for the sofa: hands down on the thighs, no keyboard motion.
   seg(sofaArms,side*.30,1.25,.035,side*.34,.98,.10,.104,.090,suit);
   seg(sofaArms,side*.34,.98,.10,side*.26,.73,.31,.084,.065,suit);
@@ -443,7 +504,7 @@ function buildStaffAvatar(i){
  const tablet=new THREE.Group();standingArms.add(tablet);
  box(.29,.035,.20,mat('#172c3c'),.19,.83,.40,tablet);
  const screenTab=box(.245,.009,.16,mat('#50bfa0'),.19,.856,.40,tablet);
- const item={group:pivot,upper,sittingLegs,standingLegs,deskArms,sofaArms,standingArms,hands,strideLegs,cup,tablet,role:'',state:'WORKING',index:i,head:upper,route:[],walkSpeed:1.75,inspectAt:0,inspectIndex:i%6,walking:false};
+ const item={group:pivot,upper,sittingLegs,standingLegs,deskArms,sofaArms,standingArms,hands,strideLegs,cup,tablet,cheerArms,celebrateUntil:0,lossUntil:0,role:'',state:'WORKING',index:i,head:upper,route:[],walkSpeed:1.75,inspectAt:0,inspectIndex:i%6,walking:false};
  pivot.traverse(obj=>{if(obj.isMesh){obj.userData.index=i;clickTargets.push(obj)}});
  scene.add(pivot);return item;
 }
@@ -503,7 +564,7 @@ function poseForRole(p,role,walking=false){
  p.upper.position.y=seated?0:.42;
  p.sittingLegs.visible=seated;
  p.standingLegs.visible=!seated;
- p.deskArms.visible=!walking&&role==='desk';
+ p.deskArms.visible=!walking&&role==='desk';p.cheerArms.visible=false;
  p.sofaArms.visible=!walking&&role==='sofa';
  p.standingArms.visible=walking||role==='coffee'||role==='supervisor';
  p.cup.visible=!walking&&role==='coffee';
@@ -605,9 +666,15 @@ function updateTeam(t){
   p.upper.position.y=p.role==='desk'||p.role==='sofa'?0:.42;
   p.upper.rotation.y=Math.sin(t*.6+i)*.018;
   p.upper.rotation.z=0;
+  p.upper.rotation.x=0;
   p.standingArms.rotation.x=0;
+  const cheering=p.role==='desk'&&p.celebrateUntil>t;
+  p.cheerArms.visible=cheering;
+  if(p.role==='desk')p.deskArms.visible=!cheering;
+  if(cheering){p.cheerArms.rotation.z=Math.sin(t*12+i)*.11;p.upper.rotation.z=Math.sin(t*7+i)*.07;}
+  else if(p.role==='desk'&&p.lossUntil>t){p.upper.rotation.x=.12;}
   for(const leg of p.strideLegs)leg.rig.rotation.x=0;
-  if(p.role==='desk'){
+  if(p.role==='desk'&&!cheering){
    for(const h of p.hands){h.group.position.y=1.115+Math.sin(t*11+i+h.side)*.019;h.group.rotation.x=Math.sin(t*12+i+h.side)*.07;}
   }else if(p.role==='sofa'){
    // Relaxed on the sofa: both arms down, no typing, only gentle breathing.
