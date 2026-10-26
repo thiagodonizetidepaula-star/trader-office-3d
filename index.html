@@ -239,7 +239,8 @@ function restoreDemoHistory(){
   if(!data||data.version!==1||!Array.isArray(data.recent)||!Number.isInteger(data.total)||data.total<0||data.total>1000000)return;
   if(!Number.isInteger(data.wins)||!Number.isInteger(data.losses)||data.wins+data.losses!==data.total||!Number.isFinite(data.balance))return;
   total=data.total;wins=data.wins;losses=data.losses;balance=data.balance;
-  Object.assign(demoLedger,{total,wins,losses,balance,recent:data.recent.slice(0,25),last:data.recent[0]||null,lastByTrader:Array(12).fill(null)});
+  const safeTrades=data.recent.slice(0,25).filter(op=>op&&names.includes(op.name)&&strategies.includes(op.strategy)&&['EUR/USD','GBP/USD','USD/JPY','AUD/USD'].includes(op.asset)&&typeof op.win==='boolean'&&Number.isFinite(op.v)&&Math.abs(op.v)<1000000);
+  Object.assign(demoLedger,{total,wins,losses,balance,recent:safeTrades,last:safeTrades[0]||null,lastByTrader:Array(12).fill(null)});
   for(const op of demoLedger.recent){
    if(!op||!names.includes(op.name)||!['EUR/USD','GBP/USD','USD/JPY','AUD/USD'].includes(op.asset)||typeof op.win!=='boolean'||!Number.isFinite(op.v))continue;
    demoLedger.lastByTrader[names.indexOf(op.name)]??=op;
@@ -408,9 +409,11 @@ function pathBetween(from,to,fromRole,toRole,i){
  const path=[],side=deskSide(i),gap=nearestGap(from.x,side);
  const push=(x,z)=>path.push(point(x,z));
  if(fromRole==='desk'){
-  if(positions[i][1]<0){push(from.x,-1.35);push(gap,-1.35);push(gap,2.35)}
-  else push(from.x,2.35);
-  push(0,2.35);
+  // Stand up and step sideways out of the chair BEFORE moving toward the aisle.
+  // Going directly forward from the chair would pass through the chair back.
+  push(gap,from.z);
+  if(positions[i][1]<0)push(gap,-1.35);
+  push(gap,2.35);push(0,2.35);
  }else if(fromRole==='supervisor'){
   if(from.z<2.1){push(gap,from.z);push(gap,2.35)}
   push(0,2.35);
@@ -421,8 +424,10 @@ function pathBetween(from,to,fromRole,toRole,i){
  }else push(0,2.35);
  if(toRole==='desk'){
   const gx=nearestGap(to.x,side);
-  if(positions[i][1]<0){push(gx,2.35);push(gx,-1.35);push(to.x,-1.35)}
-  else push(to.x,2.35);
+  push(gx,2.35);
+  if(positions[i][1]<0)push(gx,-1.35);
+  // Approach beside the chair before sitting down, not through its backrest.
+  push(gx,to.z);
  }else if(toRole==='supervisor'){
   const gx=side*3.52;push(gx,2.35);push(gx,-1.35);
  }else if(toRole==='sofa'){
