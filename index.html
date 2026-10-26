@@ -234,7 +234,7 @@ function teamPosition(p,role){
  p.deskArms.visible=role==='desk'||role==='sofa';
  p.standingArms.visible=role==='coffee'||role==='supervisor';
  p.cup.visible=role==='coffee';p.tablet.visible=role==='supervisor';
- if(role==='sofa'){p.group.position.set(-5.75,-.16,8.35);p.group.rotation.y=Math.PI;}
+ if(role==='sofa'){p.group.position.set(-5.75,.10,8.35);p.group.rotation.y=Math.PI;}
  else if(role==='coffee'){p.group.position.set(6.85,0,7.95);p.group.rotation.y=Math.PI*.86;}
  else if(role==='supervisor'){p.group.position.set(2.9,0,3.73);p.group.rotation.y=Math.PI*.75;}
  else{p.group.position.set(x,0,z+1);p.group.rotation.y=Math.PI;}
