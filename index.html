@@ -2,12 +2,12 @@
 <style>*{box-sizing:border-box}body{margin:0;background:#0b1420;color:#e5f4f5;font:14px system-ui,sans-serif}header{padding:12px 16px;background:#152536;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}h1{font-size:18px;margin:0}small,.hint{color:#a6bfc6}button{border:1px solid #476270;background:#233d4b;color:#eefbfb;padding:10px 13px;border-radius:9px;cursor:pointer}button.primary{background:#19795f;border-color:#2ebc90}button:disabled{opacity:.5}main{max-width:1300px;margin:auto;padding:12px}.controls{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:10px}.stage{height:min(66vh,720px);min-height:390px;border:1px solid #405e70;position:relative;overflow:hidden;border-radius:15px;background:linear-gradient(#1b3344,#475f70)}#scene{width:100%;height:100%;display:block;touch-action:none}.board{position:absolute;top:10px;left:10px;background:#071b27e8;border:1px solid #60d4a6;border-radius:10px;padding:10px 12px;max-width:min(330px,75%);pointer-events:none}.board strong{display:block;color:#75f1b9;font-size:12px}.board span{display:block;font-size:13px}.info{position:absolute;right:10px;bottom:10px;background:#071b27db;border-radius:8px;padding:8px 10px;pointer-events:none;font-size:12px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0}.stat,.panel{background:#182d3d;border:1px solid #345364;padding:13px;border-radius:11px}.stat b{display:block;font-size:23px}.stat span{font-size:12px;color:#a6bfc6}.win{color:#5bdfaa}.loss{color:#ff8f93}.panel{margin:12px 0}section{overflow:auto}table{width:100%;border-collapse:collapse;min-width:520px}td,th{text-align:left;border-bottom:1px solid #304859;padding:9px}th{color:#b3cbd4}.hint{font-size:12px}#fallback{display:none;position:absolute;inset:30% 8%;text-align:center} @media(max-width:620px){.stage{height:62vh;min-height:440px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.board{padding:8px}.board span{font-size:12px}}</style>
 <script type="importmap">{"imports":{"three":"https://esm.sh/three@0.170.0","three/addons/":"https://esm.sh/three@0.170.0/examples/jsm/"}}</script></head>
 <body><header><h1>🐯 XTREME TIGER <small>· Trader Office 3D</small></h1><b class="win">● DEMONSTRAÇÃO</b></header><main>
-<div class="controls"><button id="start" class="primary">▶ Iniciar demo</button><button id="pause">⏸ Pausar</button><button id="reset">↺ Zerar</button><button id="camera">🎥 Recentrar câmera</button><button id="avatarTest" class="primary">🧍 Testar trader executivo</button><small id="avatarStatus" aria-live="polite">Protótipo próprio · 1 personagem</small><small>Arraste para girar · pinça para zoom · toque em um trader</small></div>
+<div class="controls"><button id="start" class="primary">▶ Iniciar demo</button><button id="pause">⏸ Pausar</button><button id="reset">↺ Zerar</button><button id="camera">🎥 Recentrar câmera</button><button id="avatarTest" class="primary">↩ Ver equipe original</button><small id="avatarStatus" aria-live="polite">🐯 Equipe Tiger · 6 homens e 6 mulheres · rodízio automático</small><small>Arraste para girar · pinça para zoom · toque em um trader</small></div>
 <div class="stage"><canvas id="scene"></canvas><div id="fallback">Não foi possível carregar o motor 3D. Verifique a conexão com a internet.</div><div class="board"><strong>🐯 XTREME TIGER · LOUSA DIGITAL</strong><span id="headline">Equipe analisando o mercado fictício…</span></div><div class="info">🏢 Sala A · Sala B · Recepção · 12 computadores</div></div>
 <div class="stats"><div class="stat"><span>Operações fictícias</span><b id="total">0</b></div><div class="stat"><span>Vitórias</span><b class="win" id="wins">0</b></div><div class="stat"><span>Derrotas</span><b class="loss" id="losses">0</b></div><div class="stat"><span>Saldo simulado</span><b id="balance">R$ 0,00</b></div></div>
 <div class="panel" id="detail">👥 Selecione um dos 12 traders para visualizar sua estratégia.</div>
 <h3>Histórico da simulação</h3><section><table><thead><tr><th>Trader</th><th>Ativo</th><th>Estratégia</th><th>Resultado</th><th>Valor</th></tr></thead><tbody id="history"></tbody></table></section>
-<p class="hint">Esta versão usa geometria 3D original, produzida por código. O botão de teste mostra um trader executivo criado com geometria 3D original, vestido e sentado digitando. É um protótipo visual, não um modelo The Sims nem um GLB importado. Os outros 11 traders continuam com geometria original. Os pacotes gratuitos de móveis Kenney/reodesuxz e animações Mixamo ainda não foram incorporados. As operações são aleatórias e fictícias, sem conexão com a Bullex. Personagens estilizados fazem movimentos simples, não são modelos do The Sims.</p></main>
+<p class="hint">Esta versão usa geometria 3D original, produzida por código. A equipe Tiger tem 6 homens e 6 mulheres diferentes, com ternos e emblema original de tigre. Nove trabalham sentados, um descansa no sofá, outro toma café e um supervisiona. As funções se alternam a cada 38 segundos. São avatares 3D estilizados originais, não modelos The Sims nem GLB importados. Os pacotes gratuitos de móveis Kenney/reodesuxz e animações Mixamo ainda não foram incorporados. As operações são aleatórias e fictícias, sem conexão com a Bullex. Personagens estilizados fazem movimentos simples, não são modelos do The Sims.</p></main>
 <script type="module">
 import * as THREE from 'three';import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 const $=id=>document.getElementById(id), canvas=$('scene'),scene=new THREE.Scene();scene.background=new THREE.Color('#314858');scene.fog=new THREE.Fog('#314858',24,48);
@@ -107,83 +107,166 @@ let total=0,wins=0,losses=0,balance=0,timer=null;const money=n=>n.toLocaleString
 function tick(){const i=Math.floor(Math.random()*people.length),win=Math.random()>.5,asset=['EUR/USD','GBP/USD','USD/JPY','AUD/USD'][Math.floor(Math.random()*4)],v=win?8:-10;total++;wins+=win?1:0;losses+=win?0:1;balance+=v;selected=i;$('total').textContent=total;$('wins').textContent=wins;$('losses').textContent=losses;$('balance').textContent=money(balance);$('headline').textContent=names[i]+' · '+asset+' · '+strategies[i]+' · '+(win?'WIN ✅':'LOSS ❌');$('history').insertAdjacentHTML('afterbegin','<tr><td>'+names[i]+'</td><td>'+asset+'</td><td>'+strategies[i]+'</td><td class="'+(win?'win':'loss')+'">'+(win?'WIN':'LOSS')+'</td><td>'+money(v)+'</td></tr>');people[i].phase+=3;people[i].celebrate=clock.getElapsedTime()+2.5;people[i].win=win;signals[i].material.color.set(win?0xffffff:0xff5b75);showDetail()}
 $('start').onclick=()=>{if(timer===null)timer=setInterval(tick,4000)};$('pause').onclick=()=>{clearInterval(timer);timer=null};$('reset').onclick=()=>{$('pause').click();total=wins=losses=balance=0;$('total').textContent=$('wins').textContent=$('losses').textContent='0';$('balance').textContent=money(0);$('headline').textContent='Equipe analisando o mercado fictício…';$('history').innerHTML=''};$('camera').onclick=()=>{camera.position.set(12,15,23);controls.target.set(0,1.1,1.4);controls.update()};
 function resize(){const r=canvas.getBoundingClientRect();if(r.width&&r.height){camera.aspect=r.width/r.height;camera.updateProjectionMatrix();renderer.setSize(r.width,r.height,false)}}new ResizeObserver(resize).observe(canvas);resize();
-// Reliable opt-in office character prototype: all meshes are generated locally.
-// No third-party GLB dependency, and the original 12 traders stay available.
-let premiumAvatar=null,premiumActive=false,premiumHands=[];
-const avatarIndex=2;
-function avatarMessage(msg){$('avatarStatus').textContent=msg}
-function buildOfficeAvatar(){
- const pivot=new THREE.Group();pivot.position.set(positions[avatarIndex][0],0,positions[avatarIndex][1]+1);pivot.rotation.y=Math.PI;
- const skin=mat('#d9a47f'),skinShade=mat('#c88f6d'),hair=mat('#2d2525'),hairLight=mat('#47352c');
- const suit=mat('#26394f'),suitLight=mat('#3d5671'),pants=mat('#283749'),white=mat('#f2f2ed'),tie=mat('#b66c44'),shoe=mat('#171d26'),iris=mat('#3a514b'),black=mat('#19232a'),pink=mat('#985f61');
- const sph=(x,y,z,sx,sy,sz,m,par=pivot)=>{const q=ball(1,m,x,y,z,par);q.scale.set(sx,sy,sz);return q};
- const seg=(ax,ay,az,bx,by,bz,r1,r2,m,par=pivot)=>{
-  const v=new THREE.Vector3(ax,ay,az),w=new THREE.Vector3(bx,by,bz),d=new THREE.Vector3().subVectors(w,v);
-  const mesh=new THREE.Mesh(new THREE.CylinderGeometry(r2,r1,d.length(),10),m);
-  mesh.position.copy(v).add(w).multiplyScalar(.5);
-  mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());mesh.castShadow=true;par.add(mesh);return mesh;
+// Xtreme Tiger team: twelve distinct original stylized executives (six women, six men).
+// Procedural 3D only, no unverified external character files or dependencies.
+const femaleStaff=new Set([1,3,4,6,8,10]);
+const team=[],teamRoles={sofa:-1,coffee:-1,supervisor:-1};
+let premiumActive=true,lastShift=-1;
+const skinColors=['#d5a17d','#a66f52','#e8bb9c','#bf8a6c','#dfb18d','#8c5c46','#c79072','#e0aa80','#9e6c51','#e6bf9e','#bd896c','#ac7759'];
+const hairColors=['#292024','#3c2927','#3a2421','#ae7d48','#29272e','#463129','#221d24','#b28b54','#3c292e','#24232b','#5e342b','#292c31'];
+const suits=['#21384c','#513d56','#314b5d','#243c56','#4c3552','#31483e','#293e55','#453a48','#33525a','#27364b','#59414c','#3b4452'];
+const hairstyles=['quiff','long','side','bob','bun','short','ponytail','curly','braids','swept','waves','fade'];
+function tigerLogo(){
+ const cv=document.createElement('canvas');cv.width=cv.height=128;const g=cv.getContext('2d');
+ g.fillStyle='#102b3b';g.beginPath();g.arc(64,64,62,0,Math.PI*2);g.fill();
+ g.strokeStyle='#f6c676';g.lineWidth=6;g.stroke();
+ g.fillStyle='#f4a940';g.beginPath();g.moveTo(26,44);g.lineTo(19,16);g.lineTo(49,29);g.lineTo(79,29);g.lineTo(109,16);g.lineTo(101,44);g.quadraticCurveTo(119,82,64,111);g.quadraticCurveTo(9,82,26,44);g.fill();
+ g.fillStyle='#fff2d9';g.beginPath();g.ellipse(64,83,27,19,0,0,Math.PI*2);g.fill();
+ g.fillStyle='#182733';g.beginPath();g.moveTo(64,83);g.lineTo(53,74);g.lineTo(75,74);g.fill();
+ g.strokeStyle='#1c2a33';g.lineWidth=7;g.lineCap='round';
+ for(const side of [-1,1]){g.beginPath();g.moveTo(64+side*21,40);g.lineTo(64+side*35,57);g.stroke();g.beginPath();g.moveTo(64+side*22,63);g.lineTo(64+side*38,74);g.stroke();}
+ g.beginPath();g.moveTo(64,34);g.lineTo(64,51);g.stroke();
+ g.fillStyle='#17242a';for(const x of [44,84]){g.beginPath();g.arc(x,65,5,0,Math.PI*2);g.fill();}
+ const t=new THREE.CanvasTexture(cv);t.colorSpace=THREE.SRGBColorSpace;return t;
+}
+const logoMaterial=new THREE.MeshBasicMaterial({map:tigerLogo(),transparent:true,side:THREE.DoubleSide,depthWrite:false});
+function buildStaffAvatar(i){
+ const woman=femaleStaff.has(i),pivot=new THREE.Group(),upper=new THREE.Group(),sittingLegs=new THREE.Group(),standingLegs=new THREE.Group(),deskArms=new THREE.Group(),standingArms=new THREE.Group();
+ pivot.add(sittingLegs,standingLegs,upper);upper.add(deskArms,standingArms);
+ const skin=mat(skinColors[i]),skinShade=mat('#b77c63'),hair=mat(hairColors[i]),suit=mat(suits[i]),lapel=mat('#62718a'),pants=mat(suits[i]),white=mat('#f4f2ed'),shoe=mat('#1d222b'),eye=mat('#fdf7ed'),iris=mat(['#4b604b','#60412e','#3d6172'][i%3]),dark=mat('#1d2630'),lip=mat(woman?'#a85e68':'#a5756b'),accent=mat(woman?'#f1c8ac':'#d99a51');
+ const sph=(par,x,y,z,sx,sy,sz,m)=>{const q=ball(1,m,x,y,z,par);q.scale.set(sx,sy,sz);return q};
+ const seg=(par,ax,ay,az,bx,by,bz,r1,r2,m)=>{
+  const v=new THREE.Vector3(ax,ay,az),w=new THREE.Vector3(bx,by,bz),d=w.clone().sub(v);
+  const mesh=new THREE.Mesh(new THREE.CylinderGeometry(r2,r1,d.length(),9),m);
+  mesh.position.copy(v).add(w).multiplyScalar(.5);mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());mesh.castShadow=true;par.add(mesh);return mesh;
  };
- // Seated legs with knees tucked beneath the desk, and proper shoes.
- sph(0,.75,-.045,.31,.17,.25,pants);
+ // Bent legs at desks and on the sofa.
+ sph(sittingLegs,0,.75,-.06,.29,.17,.24,pants);
  for(const side of [-1,1]){
-  sph(side*.16,.62,.24,.15,.16,.37,pants);
-  seg(side*.17,.62,.15,side*.19,.53,.53,.135,.12,pants);
-  seg(side*.19,.53,.53,side*.19,.19,.51,.105,.085,pants);
-  sph(side*.19,.14,.64,.13,.105,.245,shoe);
+  sph(sittingLegs,side*.15,.61,.24,.145,.16,.34,pants);
+  seg(sittingLegs,side*.17,.59,.17,side*.19,.48,.48,.13,.12,pants);
+  seg(sittingLegs,side*.19,.48,.48,side*.19,.16,.50,.103,.082,pants);
+  sph(sittingLegs,side*.19,.13,.62,.125,.085,.22,shoe);
+  seg(standingLegs,side*.15,1.13,-.02,side*.17,.55,.015,.15,.11,pants);
+  seg(standingLegs,side*.17,.55,.015,side*.18,.14,.035,.11,.08,pants);
+  sph(standingLegs,side*.18,.10,.17,.13,.095,.23,shoe);
  }
- // Tailored jacket, white shirt, tie and blazer lapels.
- sph(0,1.035,-.055,.34,.38,.23,suit);
- sph(0,1.16,.13,.15,.25,.065,white);
- sph(0,1.04,.208,.052,.155,.028,tie);
- sph(0,1.22,.217,.083,.052,.035,tie);
+ sph(upper,0,1.04,-.055,woman?.31:.34,.38,.23,suit);
+ sph(upper,0,1.17,.137,.145,.25,.062,white);
+ if(woman){sph(upper,0,1.095,.204,.11,.13,.027,accent);}
+ else{sph(upper,0,1.04,.21,.046,.16,.03,accent);sph(upper,0,1.22,.22,.073,.052,.033,accent);}
  for(const side of [-1,1]){
-  seg(side*.11,1.30,.172,side*.24,1.055,.20,.065,.105,suitLight);
-  sph(side*.23,1.26,.015,.15,.13,.16,suit);
+  seg(upper,side*.105,1.30,.166,side*.235,1.065,.196,.058,.095,lapel);
+  sph(upper,side*.245,1.265,.015,.15,.13,.16,suit);
  }
- sph(0,1.37,0,.105,.12,.11,skin);
- // Facial features are on +Z; the seated avatar looks towards the monitor after rotation.
- sph(0,1.60,.015,.235,.286,.224,skin);
- sph(0,1.47,.195,.145,.092,.045,skinShade);
- sph(0,1.595,.235,.054,.086,.067,skin);
- sph(0,1.52,.242,.075,.016,.015,pink);
+ sph(upper,0,1.37,0,.095,.12,.10,skin);
+ sph(upper,0,1.61,.015,woman?.221:.235,.281,.217,skin);
+ sph(upper,0,1.48,.19,.142,.08,.042,skinShade);
+ sph(upper,0,1.594,.231,.047,.073,.058,skin);
+ sph(upper,0,1.514,.241,.067,.014,.015,lip);
  for(const side of [-1,1]){
-  sph(side*.227,1.585,.01,.045,.079,.052,skin);
-  sph(side*.091,1.646,.211,.070,.045,.023,white);
-  sph(side*.092,1.646,.231,.030,.033,.014,iris);
-  sph(side*.093,1.649,.242,.013,.019,.009,black);
-  sph(side*.09,1.716,.212,.079,.016,.021,hair);
+  sph(upper,side*.222,1.59,.012,.044,.071,.05,skin);
+  sph(upper,side*.09,1.646,.210,.068,.043,.021,eye);
+  sph(upper,side*.09,1.646,.232,.029,.031,.013,iris);
+  sph(upper,side*.09,1.646,.241,.012,.017,.009,dark);
+  sph(upper,side*.09,1.72,.213,.073,.015,.018,hair);
  }
- // Side-part haircut, textured layers, ears and subtle sideburns.
- sph(0,1.816,-.052,.25,.118,.225,hair);
- sph(-.11,1.799,.091,.17,.083,.17,hair);
- sph(.15,1.769,-.032,.10,.115,.19,hairLight);
- sph(-.226,1.68,-.015,.054,.16,.13,hair);
- sph(.226,1.68,-.015,.054,.16,.13,hair);
- sph(0,1.748,-.175,.215,.18,.085,hair);
- // Arms bend forward over the keyboard; wrists are separate for subtle typing animation.
+ // Twelve different haircuts, lengths and hair colors.
+ const style=hairstyles[i];
+ sph(upper,0,1.81,-.05,.242,.117,.22,hair);
+ if(style==='long'||style==='waves'||style==='braids'){
+  for(const side of [-1,1]){
+   sph(upper,side*.222,1.48,-.045,.083,style==='waves'?.36:.31,.16,hair);
+   if(style==='braids')for(let k=0;k<4;k++)sph(upper,side*.23,1.65-k*.11,-.06,.072,.074,.078,hair);
+  }
+ }else if(style==='bob'){
+  for(const side of [-1,1])sph(upper,side*.225,1.65,-.04,.105,.21,.17,hair);
+ }else if(style==='bun'){
+  sph(upper,0,1.99,-.16,.16,.15,.15,hair);
+ }else if(style==='ponytail'){
+  sph(upper,0,1.54,-.245,.12,.31,.115,hair);
+ }else if(style==='curly'){
+  for(let k=0;k<10;k++){const ang=k*Math.PI*2/10;sph(upper,Math.cos(ang)*.20,1.84+Math.sin(k*3)*.065,Math.sin(ang)*.16,.105,.105,.10,hair)}
+ }else if(style==='quiff'||style==='swept'){
+  sph(upper,-.10,1.91,.07,.18,.105,.15,hair);
+ }else if(style==='side'||style==='fade'){
+  sph(upper,.14,1.79,.055,.13,.075,.17,hair);
+ }else if(style==='short'){
+  sph(upper,0,1.87,.03,.215,.09,.16,hair);
+ }
+ // Tiny custom tiger emblem sewn on the suit lapel.
+ const patch=new THREE.Mesh(new THREE.PlaneGeometry(.15,.15),logoMaterial);
+ patch.position.set(-.215,1.16,.245);upper.add(patch);
+ const hands=[];
  for(const side of [-1,1]){
-  seg(side*.30,1.25,.035,side*.34,1.06,.39,.105,.095,suit);
-  sph(side*.34,1.06,.39,.102,.11,.10,suit);
-  seg(side*.34,1.06,.39,side*.22,1.115,.74,.091,.075,suit);
-  const hand=new THREE.Group();hand.position.set(side*.22,1.115,.77);pivot.add(hand);
-  sph(0,0,0,.082,.045,.115,skin,hand);
-  for(let k=0;k<4;k++)sph((k-1.5)*.031,-.015,.091,.017,.018,.074,skin,hand);
-  premiumHands.push({group:hand,side});
+  seg(deskArms,side*.30,1.25,.035,side*.34,1.065,.38,.105,.092,suit);
+  sph(deskArms,side*.34,1.065,.38,.098,.105,.10,suit);
+  seg(deskArms,side*.34,1.065,.38,side*.22,1.115,.73,.09,.075,suit);
+  const hand=new THREE.Group();hand.position.set(side*.22,1.115,.76);deskArms.add(hand);
+  sph(hand,0,0,0,.08,.045,.11,skin);
+  for(let k=0;k<4;k++)sph(hand,(k-1.5)*.03,-.015,.09,.016,.017,.07,skin);
+  hands.push({group:hand,side});
+  seg(standingArms,side*.32,1.25,.035,side*.36,.87,.13,.103,.08,suit);
+  if(side===1){seg(standingArms,side*.36,.87,.13,side*.22,.83,.38,.078,.065,suit);sph(standingArms,side*.22,.83,.40,.076,.06,.085,skin);}
+  else{seg(standingArms,side*.36,.87,.13,side*.37,.53,.16,.08,.065,suit);sph(standingArms,side*.37,.50,.16,.074,.09,.07,skin);}
  }
- pivot.traverse(obj=>{if(obj.isMesh){obj.userData.index=avatarIndex;clickTargets.push(obj)}});
- scene.add(pivot);return pivot;
+ // Cup only when the staff member is at the coffee station.
+ const cup=new THREE.Group();standingArms.add(cup);cup.position.set(.22,.89,.43);
+ const ceramic=mat('#f1f1e6'),coffee=mat('#3b2117');
+ const cupMesh=new THREE.Mesh(new THREE.CylinderGeometry(.09,.078,.16,12),ceramic);cupMesh.position.y=.055;cup.add(cupMesh);
+ const coffeeTop=new THREE.Mesh(new THREE.CircleGeometry(.079,12),coffee);coffeeTop.rotation.x=-Math.PI/2;coffeeTop.position.y=.137;cup.add(coffeeTop);
+ const handle=new THREE.Mesh(new THREE.TorusGeometry(.057,.016,6,12),ceramic);handle.position.set(.10,.055,0);handle.rotation.y=Math.PI/2;cup.add(handle);
+ // Supervisor carries a tablet.
+ const tablet=new THREE.Group();standingArms.add(tablet);
+ box(.29,.035,.20,mat('#172c3c'),.19,.83,.40,tablet);
+ const screenTab=box(.245,.009,.16,mat('#50bfa0'),.19,.856,.40,tablet);
+ const item={group:pivot,upper,sittingLegs,standingLegs,deskArms,standingArms,hands,cup,tablet,role:'',index:i,head:upper};
+ pivot.traverse(obj=>{if(obj.isMesh){obj.userData.index=i;clickTargets.push(obj)}});
+ scene.add(pivot);return item;
+}
+for(let i=0;i<12;i++){team.push(buildStaffAvatar(i));people[i].group.visible=false;}
+function teamPosition(p,role){
+ const i=p.index,x=positions[i][0],z=positions[i][1];
+ p.role=role;
+ p.upper.position.y=role==='desk'||role==='sofa'?0:.42;
+ p.sittingLegs.visible=role==='desk'||role==='sofa';
+ p.standingLegs.visible=role==='coffee'||role==='supervisor';
+ p.deskArms.visible=role==='desk'||role==='sofa';
+ p.standingArms.visible=role==='coffee'||role==='supervisor';
+ p.cup.visible=role==='coffee';p.tablet.visible=role==='supervisor';
+ if(role==='sofa'){p.group.position.set(-5.75,-.16,8.35);p.group.rotation.y=Math.PI;}
+ else if(role==='coffee'){p.group.position.set(6.85,0,7.95);p.group.rotation.y=Math.PI*.86;}
+ else if(role==='supervisor'){p.group.position.set(2.9,0,3.73);p.group.rotation.y=Math.PI*.75;}
+ else{p.group.position.set(x,0,z+1);p.group.rotation.y=Math.PI;}
+}
+function updateShift(t){
+ const shift=Math.floor(t/38);
+ if(shift===lastShift)return;
+ lastShift=shift;
+ const sofa=shift%12,coffee=(shift+4)%12,supervisor=(shift+8)%12;
+ teamRoles.sofa=sofa;teamRoles.coffee=coffee;teamRoles.supervisor=supervisor;
+ for(const p of team){const role=p.index===sofa?'sofa':p.index===coffee?'coffee':p.index===supervisor?'supervisor':'desk';teamPosition(p,role)}
+ if(premiumActive)$('avatarStatus').textContent='☕ '+names[coffee]+' no café · 🛋️ '+names[sofa]+' no sofá · 👔 '+names[supervisor]+' supervisionando · rodízio a cada 38 s';
+}
+function updateTeam(t){
+ updateShift(t);
+ if(!premiumActive)return;
+ for(const p of team){
+  const i=p.index;p.upper.rotation.y=Math.sin(t*.6+i)*.018;
+  if(p.role==='desk')for(const h of p.hands){h.group.position.y=1.115+Math.sin(t*11+i+h.side)*.019;h.group.rotation.x=Math.sin(t*12+i+h.side)*.07;}
+  else if(p.role==='coffee'){p.cup.rotation.z=Math.sin(t*1.7+i)*.10;p.upper.rotation.z=Math.sin(t*.9+i)*.015;}
+  else if(p.role==='supervisor'){p.tablet.rotation.y=Math.sin(t*.7)*.12;p.upper.rotation.z=Math.sin(t*.6+i)*.025;}
+  else p.upper.rotation.z=Math.sin(t*.7+i)*.013;
+ }
 }
 $('avatarTest').onclick=()=>{
- if(!premiumAvatar)premiumAvatar=buildOfficeAvatar();
- premiumActive=!premiumActive;premiumAvatar.visible=premiumActive;
- people[avatarIndex].group.visible=!premiumActive;
- $('avatarTest').textContent=premiumActive?'↩ Voltar aos bonecos originais':'🧍 Testar trader executivo';
- avatarMessage(premiumActive?'Protótipo executivo · roupa social · sentado e digitando':'Equipe original restaurada');
- if(premiumActive){
-  camera.position.set(-3.7,3.6,-5.2);
-  controls.target.set(positions[avatarIndex][0],1.16,positions[avatarIndex][1]+.8);
-  controls.update();
- }
+ premiumActive=!premiumActive;
+ for(const p of team)p.group.visible=premiumActive;
+ for(const p of people)p.group.visible=!premiumActive;
+ $('avatarTest').textContent=premiumActive?'↩ Ver equipe original':'🐯 Mostrar equipe Tiger';
+ if(premiumActive){lastShift=-1;updateShift(clock.getElapsedTime())}
+ else $('avatarStatus').textContent='Equipe original de 12 traders · versão anterior';
 };
-const clock=new THREE.Clock();function frame(){requestAnimationFrame(frame);const t=clock.getElapsedTime();if(premiumActive&&premiumAvatar){for(const h of premiumHands){h.group.position.y=1.115+Math.sin(t*12+h.side*1.5)*.019;h.group.rotation.x=Math.sin(t*12+h.side)*.085;}}people.forEach((p,i)=>{const cycle=(t*.22+i*1.41)%(Math.PI*2);const going=false;p.walk=false;p.group.position.set(p.x,0,p.z+1);p.group.rotation.y=Math.PI;p.head.rotation.z=Math.sin(t*2+i)*.06;p.head.rotation.x=.12+Math.sin(t*.9+i)*.025;p.head.scale.y=(Math.sin(t*1.6+i*1.8)>.995?.94:1);p.smile.scale.x=t<p.celebrate?(p.win?1.4:.55):1;signals[i].material.opacity=Math.max(0,Math.min(1,(p.celebrate-t)*1.5));signals[i].position.y=2.38+(signals[i].material.opacity?Math.sin(t*5)*.055:0);p.arms.forEach((arm,k)=>{arm.rotation.z=(k===0?-.09:.09)+(t<p.celebrate?Math.sin(t*4+i)*.08:Math.sin(t*8+i+k*Math.PI)*.045);arm.rotation.x=-1.2+Math.sin(t*9+i+k*Math.PI)*.065});p.legs.forEach((leg,k)=>{leg.rotation.x=going?Math.sin(t*8+i+k*Math.PI)*.3:0})});controls.update();renderer.render(scene,camera)}frame();
+updateShift(0);
+const clock=new THREE.Clock();function frame(){requestAnimationFrame(frame);const t=clock.getElapsedTime();updateTeam(t);people.forEach((p,i)=>{const cycle=(t*.22+i*1.41)%(Math.PI*2);const going=false;p.walk=false;p.group.position.set(p.x,0,p.z+1);p.group.rotation.y=Math.PI;p.head.rotation.z=Math.sin(t*2+i)*.06;p.head.rotation.x=.12+Math.sin(t*.9+i)*.025;p.head.scale.y=(Math.sin(t*1.6+i*1.8)>.995?.94:1);p.smile.scale.x=t<p.celebrate?(p.win?1.4:.55):1;signals[i].material.opacity=Math.max(0,Math.min(1,(p.celebrate-t)*1.5));signals[i].position.y=2.38+(signals[i].material.opacity?Math.sin(t*5)*.055:0);p.arms.forEach((arm,k)=>{arm.rotation.z=(k===0?-.09:.09)+(t<p.celebrate?Math.sin(t*4+i)*.08:Math.sin(t*8+i+k*Math.PI)*.045);arm.rotation.x=-1.2+Math.sin(t*9+i+k*Math.PI)*.065});p.legs.forEach((leg,k)=>{leg.rotation.x=going?Math.sin(t*8+i+k*Math.PI)*.3:0})});controls.update();renderer.render(scene,camera)}frame();
 </script></body></html>
