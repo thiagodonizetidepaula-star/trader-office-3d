@@ -21,10 +21,10 @@ function ball(r,m,x,y,z,parent=scene){const mesh=new THREE.Mesh(new THREE.Sphere
 box(16,.3,16,tile,0,-.17,1.9);box(16,5,.18,wall,0,2.35,-6);
 for(let x=-7.6;x<8;x+=1.4)for(let z=-5.8;z<9.8;z+=1.4)box(1.36,.018,1.36,mat((Math.round(x+z)%2)?'#819397':'#8d9fa2'),x,.01,z);
 const brandCanvas=document.createElement('canvas');brandCanvas.width=1024;brandCanvas.height=256;const bc=brandCanvas.getContext('2d');bc.fillStyle='#071b2d';bc.fillRect(0,0,1024,256);bc.fillStyle='#f4b453';bc.font='bold 76px system-ui';bc.textAlign='center';bc.fillText('XTREME TIGER',512,125);bc.fillStyle='#6ae7b0';bc.font='bold 28px system-ui';bc.fillText('TRADER OFFICE 3D',512,186);const bt=new THREE.CanvasTexture(brandCanvas);bt.colorSpace=THREE.SRGBColorSpace;const bm=new THREE.Mesh(new THREE.PlaneGeometry(4.4,1.1),new THREE.MeshBasicMaterial({map:bt,side:THREE.DoubleSide}));bm.position.set(0,4.1,-5.71);bm.scale.set(.9,.87,1);scene.add(bm);
-const coffee= new THREE.Group();coffee.position.set(6,0,7.1);scene.add(coffee);box(2.1,.17,1.3,wood,0,1.02,0,coffee);box(.16,1,.16,steel,-.8,.5,-.4,coffee);box(.16,1,.16,steel,.8,.5,.4,coffee);box(.8,.9,.55,screen,-.45,1.53,0,coffee);box(.42,.28,.48,mat('#ced9d9'),.55,1.28,0,coffee);
+const coffee= new THREE.Group();coffee.position.set(5.1,0,6.9);scene.add(coffee);box(2.1,.17,1.3,wood,0,1.02,0,coffee);box(.16,1,.16,steel,-.8,.5,-.4,coffee);box(.16,1,.16,steel,.8,.5,.4,coffee);box(.8,.9,.55,screen,-.45,1.53,0,coffee);box(.42,.28,.48,mat('#ced9d9'),.55,1.28,0,coffee);
 const names=['Alex','Bia','Caio','Dani','Eva','Fred','Gabi','Hugo','Lia','Leo','Maya','Rafa'],strategies=['Tendência','Bollinger','RSI','Médias móveis','Suporte','MACD','Price Action','Sniper','EMA 200','Volume','Breakout','Confluência'],colors=['#ed9478','#88adf0','#f0ce6d','#be9bf2','#f48eae','#8cddb9','#e3a46e','#78bad9','#a5ccea','#d38ea4','#77a9a3','#cea272'];
 const people=[],clickTargets=[],charts=[];const positions=[[-6.55,-3.5],[-4.5,-3.5],[-2.55,-3.5],[2.55,-3.5],[4.5,-3.5],[6.55,-3.5],[-6.55,.6],[-4.5,.6],[-2.55,.6],[2.55,.6],[4.5,.6],[6.55,.6]];
-positions.forEach(([x,z],i)=>{const work=new THREE.Group();work.position.set(x,0,z);scene.add(work);box(2.5,.16,1.25,wood,0,1.05,-.2,work);for(let dx of [-1.05,1.05])for(let dz of [-.65,.25])box(.1,1,.1,steel,dx,.5,dz,work);box(.92,.68,.08,screen,0,1.56,-.61,work);const cv=document.createElement('canvas');cv.width=192;cv.height=112;const ctx=cv.getContext('2d'),tex=new THREE.CanvasTexture(cv);const plane=new THREE.Mesh(new THREE.PlaneGeometry(.83,.5),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide}));plane.position.set(0,1.56,-.55);work.add(plane);charts.push({ctx,tex,seed:i,prices:Array.from({length:18},(_,k)=>50+k*.5+Math.sin(k+i)*8)});box(.42,.05,.18,steel,0,1.12,-.37,work);box(.8,.1,.15,steel,0,1.11,.25,work);
+positions.forEach(([x,z],i)=>{const work=new THREE.Group();work.position.set(x,0,z);scene.add(work);box(1.45,.16,1.25,wood,0,1.05,-.2,work);for(let dx of [-.59,.59])for(let dz of [-.65,.25])box(.1,1,.1,steel,dx,.5,dz,work);box(.92,.68,.08,screen,0,1.56,-.61,work);const cv=document.createElement('canvas');cv.width=192;cv.height=112;const ctx=cv.getContext('2d'),tex=new THREE.CanvasTexture(cv);const plane=new THREE.Mesh(new THREE.PlaneGeometry(.83,.5),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide}));plane.position.set(0,1.56,-.55);work.add(plane);charts.push({ctx,tex,seed:i,prices:Array.from({length:18},(_,k)=>50+k*.5+Math.sin(k+i)*8)});box(.42,.05,.18,steel,0,1.12,-.37,work);box(.8,.1,.15,steel,0,1.11,.25,work);
 box(.85,.12,.7,chair,0,.62,1.03,work);box(.85,.9,.14,chair,0,1.05,1.36,work);box(.15,.6,.15,steel,0,.3,1,work);
 const person=new THREE.Group();person.position.set(x,0,z+1);person.rotation.y=Math.PI;scene.add(person);const shirt=mat(colors[i]),skin=mat(['#dfb48b','#a87c5d','#f0caa8','#9e674a'][i%4]),hair=mat(['#25222a','#603b27','#d8b065','#33232a'][i%4]);const head=new THREE.Group();head.position.y=1.49;person.add(head);ball(.24,skin,0,0,0,head);ball(.23,hair,0,.13,-.05,head);for(const side of [-1,1]){ball(.033,mat('#172735'),side*.085,.025,.216,head);ball(.013,mat('#ffffff'),side*.08,.03,.239,head)}box(.11,.018,.012,mat('#874653'),0,-.103,.23,head);box(.52,.61,.32,shirt,0,1.02,0,person);const arms=[];for(const side of [-1,1]){const joint=new THREE.Group();joint.position.set(side*.35,1.22,.18);person.add(joint);box(.18,.44,.18,shirt,0,-.25,.08,joint);ball(.075,skin,0,-.48,.20,joint);joint.rotation.x=-1.2;joint.rotation.z=side*.09;arms.push(joint)}const legs=[];for(const side of [-1,1])legs.push(box(.22,.49,.22,chair,side*.15,.52,0,person));// Distinct stylized game avatars: haircuts, eyes, brows, jackets and footwear.
 const styles=['short','bob','quiff','long','bun','curly','side','ponytail'];const style=styles[i],dark=mat('#15212d'),white=mat('#f5ffff'),lip=mat('#96535c'),outfit=mat(['#1e344d','#4e355b','#80533a','#25586b','#563e68','#2f5760','#744753','#2f4535'][i]);
@@ -138,7 +138,7 @@ const labelRoom=(label,x)=>{
  const sign=new THREE.Mesh(new THREE.PlaneGeometry(2.45,.62),new THREE.MeshBasicMaterial({map:tx,side:THREE.DoubleSide}));
  sign.position.set(x,3.65,4.80);scene.add(sign);
 };
-labelRoom('XTREME · SALA EXECUTIVA',-4.55);labelRoom('XTREME · SALA TRADING',4.55);
+// Removed hanging room signs that obstructed the corridor and screen views.
 
 function drawBigChart(c){
   const g=c.ctx,w=c.cv.width,h=c.cv.height,p=c.prices,top=60,bottom=h-68,left=48,right=w-74;
@@ -168,18 +168,19 @@ setInterval(()=>charts.filter(c=>c.big).forEach(c=>{const p=c.prices;p.shift();p
 bigTV('EUR/USD',-4,2.6,-5.72,3.2,1.9,6);bigTV('GBP/USD',4,2.6,-5.72,3.2,1.9,16);
 // Separate waiting room beyond the office glass: carpet, sofa, coffee table and TV.
 const receptionGlass=new THREE.MeshPhysicalMaterial({color:'#b6e1ec',roughness:.07,transparent:true,opacity:.21,depthWrite:false,side:THREE.DoubleSide});
-box(.07,3.0,4.8,receptionGlass,-1.65,1.55,7.15);box(.09,3.1,.09,trim,-1.65,1.55,4.78);box(.09,3.1,.09,trim,-1.65,1.55,9.5);
+// Reception glass has a real opening at z=7.75 for staff returning from the sofa.
+box(.07,3.0,2.4,receptionGlass,-1.65,1.55,5.95);box(.07,3.0,1.25,receptionGlass,-1.65,1.55,8.925);for(const z of [4.75,7.15,8.30,9.55])box(.09,3.1,.09,trim,-1.65,1.55,z);
 const sofa=mat('#316d75'),carpet=mat('#34495b');
 box(4.1,.035,3.25,carpet,-5.6,.025,7.65);box(2.8,.4,1.1,sofa,-5.75,.57,8.35);
 box(2.8,.85,.22,sofa,-5.75,1.11,8.88);
 for(const d of [-1,1])box(.22,.73,1.1,sofa,-5.75+d*1.36,.82,8.35);
-box(1.45,.12,.8,wood,-5.65,.43,7.25);
-for(const d of [-1,1])box(.08,.39,.08,steel,-5.65+d*.56,.21,7.25);
+box(1.45,.12,.8,wood,-3.6,.43,6.85);
+for(const d of [-1,1])box(.08,.39,.08,steel,-3.6+d*.56,.21,6.85);
 box(3.0,2.65,.09,mat('#27404c'),-5.7,1.55,5.20);
 bigTV('USD/JPY',-5.7,2.0,5.34,2.15,1.18,28);
 const leaf=mat('#3b956c'),pot=mat('#ccaf8c');function plant(x,z){box(.45,.55,.45,pot,x,.3,z);for(let n=0;n<5;n++){const q=new THREE.Mesh(new THREE.ConeGeometry(.23,.9,7),leaf);q.position.set(x+Math.cos(n*1.25)*.2,1.0,z+Math.sin(n*1.25)*.2);scene.add(q)}}plant(-7,6.15);plant(7,8.8);plant(-7,-4.7);
 box(2.2,.035,1.35,mat('#a5b9b2'),3,.03,7.15);box(.85,.2,.65,wood,3,.36,7.15);
-for(let i=0;i<3;i++)box(1.25,.8,.06,mat(['#317486','#966c72','#32866c'][i]),-5+i*2,3.5,-5.73);
+// Removed decorative wall pictures that were overlapping the trading screens.
 // Game-style character nameplates, badges, office accents and reaction signals.
 const labels=[],signals=[];
 function tagTexture(name,sub){const canvas=document.createElement('canvas');canvas.width=256;canvas.height=80;const g=canvas.getContext('2d');g.fillStyle='#092439e8';g.beginPath();g.roundRect(3,3,250,72,16);g.fill();g.strokeStyle='#55c59c';g.lineWidth=3;g.stroke();g.textAlign='center';g.fillStyle='#f5ffff';g.font='bold 24px sans-serif';g.fillText(name,128,32);g.font='15px sans-serif';g.fillStyle='#91f0c0';g.fillText(sub,128,60);const t=new THREE.CanvasTexture(canvas);t.colorSpace=THREE.SRGBColorSpace;return t}
@@ -322,33 +323,45 @@ for(let i=0;i<12;i++){team.push(buildStaffAvatar(i));people[i].group.visible=fal
 const officeDoorZ=2.7;
 function deskPoint(i){return new THREE.Vector3(positions[i][0],0,positions[i][1]+1)}
 function point(x,z){return new THREE.Vector3(x,0,z)}
+// Route planner uses walkable aisles and the actual openings in the glass partitions.
+// Desk rows are separated by a central aisle (z=-1.35); access to the
+// corridor is through the open side door at z=2.35 (not through glass).
+function deskSide(i){return i===0||i===1||i===2||i===6||i===7||i===8?-1:1}
+function nearestGap(x,side){const gaps=side<0?[-5.52,-3.52]:[3.52,5.52];return gaps.reduce((a,b)=>Math.abs(x-a)<Math.abs(x-b)?a:b)}
 function pathBetween(from,to,fromRole,toRole,i){
- const points=[],side=i<3||i>=6&&i<=8?-1:1;
- const isInside=r=>r==='desk'||r==='supervisor';
- const toInside=toRole==='desk'||toRole==='supervisor';
- const startInside=isInside(fromRole),endInside=toInside;
- const entry=side*1.7;
- // Use the front aisle of each room and its central-corridor door.
- if(startInside){points.push(point(from.x,2.55),point(entry,2.55),point(0,2.95))}
- else{points.push(point(from.x,5.45),point(0,5.45),point(0,2.95))}
- if(endInside){
-  points.push(point(entry,2.55));
-  if(toRole==='desk')points.push(point(to.x,2.55));
-  else points.push(point(entry,-1.45));
- }else{
-  points.push(point(0,5.45));
-  if(toRole==='coffee')points.push(point(6.8,5.45));
-  else points.push(point(-5.75,5.45));
+ const path=[],side=deskSide(i),gap=nearestGap(from.x,side);
+ const push=(x,z)=>path.push(point(x,z));
+ if(fromRole==='desk'){
+  if(positions[i][1]<0){push(from.x,-1.35);push(gap,-1.35);push(gap,2.35)}
+  else push(from.x,2.35);
+  push(0,2.35);
+ }else if(fromRole==='supervisor'){
+  if(from.z<2.1){push(gap,from.z);push(gap,2.35)}
+  push(0,2.35);
+ }else if(fromRole==='sofa'){
+  push(-5.75,7.75);push(0,7.75);push(0,2.35);
+ }else if(fromRole==='coffee'){
+  push(0,7.95);push(0,2.35);
+ }else push(0,2.35);
+ if(toRole==='desk'){
+  const gx=nearestGap(to.x,side);
+  if(positions[i][1]<0){push(gx,2.35);push(gx,-1.35);push(to.x,-1.35)}
+  else push(to.x,2.35);
+ }else if(toRole==='supervisor'){
+  const gx=side*3.52;push(gx,2.35);push(gx,-1.35);
+ }else if(toRole==='sofa'){
+  push(0,7.75);push(-5.75,7.75);
+ }else if(toRole==='coffee'){
+  push(0,7.95);
  }
- points.push(to.clone());
- // If a person is already near a waypoint, skip that leg.
- return points.filter((p,j)=>j===points.length-1||p.distanceTo(from)>.2);
+ path.push(to.clone());
+ return path.filter((q,j)=>j===path.length-1||q.distanceTo(from)>.12)
 }
 function targetForRole(p,role){
  const i=p.index;
  if(role==='sofa')return point(-5.75,8.35);
  if(role==='coffee')return point(6.85,7.95);
- if(role==='supervisor')return point(i<3||i>=6&&i<=8?-1.7:1.7,-1.45);
+ if(role==='supervisor')return point(deskSide(i)*3.52,-1.35);
  return deskPoint(i);
 }
 function poseForRole(p,role,walking=false){
@@ -377,6 +390,10 @@ function walkStaff(p,dt,t){
   return;
  }
  const target=p.route[0],dx=target.x-p.group.position.x,dz=target.z-p.group.position.z,dist=Math.hypot(dx,dz),step=p.walkSpeed*dt;
+ // Give colleagues room to pass; keep the sofa limited to its assigned occupant.
+ const nextX=p.group.position.x+(dist>step?dx/Math.max(dist,.001)*step:dx),nextZ=p.group.position.z+(dist>step?dz/Math.max(dist,.001)*step:dz);
+ const crowded=team.some(q=>q!==p&&q.group.visible&&Math.hypot(nextX-q.group.position.x,nextZ-q.group.position.z)<.47&&q.index<p.index);
+ if(crowded)return;
  if(dist<=step+.03){p.group.position.x=target.x;p.group.position.z=target.z;p.route.shift();}
  else{p.group.position.x+=dx/dist*step;p.group.position.z+=dz/dist*step;}
  if(dist>.03){const facing=Math.atan2(dx,dz),turn=Math.atan2(Math.sin(facing-p.group.rotation.y),Math.cos(facing-p.group.rotation.y));p.group.rotation.y+=turn*Math.min(1,dt*7);}
@@ -386,17 +403,18 @@ function walkStaff(p,dt,t){
 }
 function patrolSupervisor(p,t){
  if(p.role!=='supervisor'||p.walking||p.route.length||t<p.inspectAt)return;
- // Pause to observe each workstation, then move to the next.
- const office=p.inspectIndex%2,idx=office===0?[0,1,2,6,7,8]:[3,4,5,9,10,11];
- const targetDesk=idx[Math.floor(p.inspectIndex/2)%idx.length];
+ // The supervisor inspects desks from the clear aisle, never through tables.
+ const side=deskSide(p.index);
+ const staff=side<0?[0,1,2,6,7,8]:[3,4,5,9,10,11];
+ const targetDesk=staff[p.inspectIndex%staff.length];
  p.inspectIndex++;
- const to=point(positions[targetDesk][0],-1.45);
- const current=p.group.position.clone();
- const crossing=Math.sign(current.x)!==Math.sign(to.x);
- if(crossing)p.route=[point(Math.sign(current.x)*1.7,-1.45),point(Math.sign(current.x)*1.7,2.55),point(0,2.95),point(Math.sign(to.x)*1.7,2.55),point(Math.sign(to.x)*1.7,-1.45),to];
- else p.route=[to];
- p.route=p.route.filter(q=>q.distanceTo(current)>.12);
- p.inspectAt=t+7;
+ const x=positions[targetDesk][0],front=positions[targetDesk][1]>=0;
+ const z=front?2.35:-1.35,from=p.group.position.clone(),gap=nearestGap(from.x,side);
+ if(Math.abs(from.z-z)>1){
+  p.route=[point(gap,from.z),point(gap,z),point(x,z)];
+ }else p.route=[point(x,z)];
+ p.route=p.route.filter(q=>q.distanceTo(from)>.14);
+ p.inspectAt=t+9;
 }
 function updateShift(t){
  const shift=Math.floor(t/65);
